@@ -127,7 +127,7 @@ export const AshaDashboard = () => {
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-teal-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-teal-800 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 border border-slate-800">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-200 border border-teal-400/30 text-xs font-bold uppercase">
             <ClipboardList className="w-3.5 h-3.5 text-teal-300" />
@@ -191,13 +191,13 @@ export const AshaDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left 7 Cols: Case Submission Form */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-          <div className="border-b border-slate-200 pb-3">
-            <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
-              <ClipboardList className="w-5 h-5 text-teal-600" />
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6 transition-colors">
+          <div className="border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <ClipboardList className="w-5 h-5 text-teal-600 dark:text-teal-400" />
               <span>New Community Health Case Report</span>
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Submit aggregated syndromic symptoms and environmental conditions for AI outbreak-risk evaluation.
             </p>
           </div>
@@ -207,33 +207,33 @@ export const AshaDashboard = () => {
             {/* Location Row */}
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">State</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">State</label>
                 <input
                   type="text"
                   required
                   value={formData.state}
                   onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold shadow-sm focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">District</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">District</label>
                 <input
                   type="text"
                   required
                   value={formData.district}
                   onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold shadow-sm focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Village</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Village</label>
                 <input
                   type="text"
                   required
                   value={formData.village}
                   onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold shadow-sm focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -241,17 +241,17 @@ export const AshaDashboard = () => {
             {/* Date & Approx Case Count & Age Group */}
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Observation Date</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Observation Date</label>
                 <input
                   type="date"
                   required
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 font-medium"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Approx. Case Count</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Approx. Case Count</label>
                 <input
                   type="number"
                   min="1"
@@ -259,15 +259,15 @@ export const AshaDashboard = () => {
                   required
                   value={formData.approx_cases}
                   onChange={(e) => setFormData({ ...formData, approx_cases: parseInt(e.target.value) || 1 })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 font-bold text-teal-800"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-teal-800 dark:text-teal-300 font-black text-sm shadow-sm focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Primary Age Group</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Primary Age Group</label>
                 <select
                   value={formData.age_group}
                   onChange={(e) => setFormData({ ...formData, age_group: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="0-5">0 - 5 Years (Infants / Toddlers)</option>
                   <option value="6-18">6 - 18 Years (Children / Teens)</option>
@@ -279,7 +279,7 @@ export const AshaDashboard = () => {
 
             {/* Symptoms Multi-Select */}
             <div>
-              <label className="block font-bold text-slate-700 mb-1.5">
+              <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1.5">
                 Observed Syndromic Symptoms (Select all matching)
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -290,14 +290,14 @@ export const AshaDashboard = () => {
                       type="button"
                       key={sym}
                       onClick={() => handleSymptomToggle(sym)}
-                      className={`p-2 rounded-xl text-[11px] font-semibold text-left border transition-all flex items-center justify-between ${
+                      className={`p-2.5 rounded-xl text-[11px] font-bold text-left border transition-all flex items-center justify-between ${
                         isChecked
-                          ? 'bg-teal-50 border-teal-500 text-teal-900 shadow-sm'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                          ? 'bg-teal-50 dark:bg-teal-950/60 border-teal-500 text-teal-950 dark:text-teal-200 shadow-sm ring-1 ring-teal-500/50'
+                          : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750'
                       }`}
                     >
                       <span>{sym}</span>
-                      {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />}
+                      {isChecked && <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />}
                     </button>
                   );
                 })}
@@ -307,11 +307,11 @@ export const AshaDashboard = () => {
             {/* Water Source & Sanitation */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Primary Drinking Water Source</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Primary Drinking Water Source</label>
                 <select
                   value={formData.water_source}
                   onChange={(e) => setFormData({ ...formData, water_source: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="Handpump">Community Handpump</option>
                   <option value="Tube Well">Deep Tube Well</option>
@@ -321,11 +321,11 @@ export const AshaDashboard = () => {
                 </select>
               </div>
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Sanitation & Runoff Condition</label>
+                <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Sanitation & Runoff Condition</label>
                 <select
                   value={formData.sanitation_status}
                   onChange={(e) => setFormData({ ...formData, sanitation_status: e.target.value })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 font-semibold"
+                  className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold shadow-sm focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="Poor Sanitation">Poor Sanitation / Flood Inundation</option>
                   <option value="Pit Latrine">Pit Latrine near water source</option>
@@ -336,20 +336,20 @@ export const AshaDashboard = () => {
 
             {/* Water / Environment Notes */}
             <div>
-              <label className="block font-bold text-slate-700 mb-1">Field Observations & Environmental Context</label>
+              <label className="block font-bold text-slate-800 dark:text-slate-200 mb-1">Field Observations & Environmental Context</label>
               <textarea
                 rows={2}
                 value={formData.water_environment_notes}
                 onChange={(e) => setFormData({ ...formData, water_environment_notes: e.target.value })}
                 placeholder="e.g. Brahmaputra backflow caused turbid waterlogging near Garamur school handpump."
-                className="w-full p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs"
+                className="w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-teal-500 text-xs shadow-sm"
               />
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 bg-gradient-to-r from-teal-700 to-teal-800 hover:from-teal-800 hover:to-teal-900 text-white font-bold rounded-2xl shadow-lg shadow-teal-700/25 flex items-center justify-center gap-2 transition-all text-xs"
+              className="w-full py-3 bg-gradient-to-r from-teal-700 to-teal-800 hover:from-teal-800 hover:to-teal-900 text-white font-bold rounded-2xl shadow-lg shadow-teal-700/25 flex items-center justify-center gap-2 transition-all text-xs hover:scale-[1.01] active:scale-[0.99]"
             >
               <Send className="w-4 h-4" />
               <span>{submitting ? 'Evaluating AI Risk Engine...' : 'Submit Case Report to Health Grid'}</span>
@@ -364,25 +364,25 @@ export const AshaDashboard = () => {
           {submissionResult && (
             <div className={`p-6 rounded-3xl border shadow-sm space-y-3 animate-in fade-in ${
               submissionResult.offline 
-                ? 'bg-amber-50 border-amber-200 text-amber-900' 
-                : 'bg-white border-teal-200'
+                ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200' 
+                : 'bg-white dark:bg-slate-900 border-teal-200 dark:border-teal-800'
             }`}>
               <div className="flex items-start justify-between">
-                <div className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-teal-600" />
+                <div className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                   <span>AI Risk Engine Output</span>
                 </div>
                 {!submissionResult.offline && (
                   <RiskBadge level={submissionResult.risk_level} score={submissionResult.risk_score} />
                 )}
               </div>
-              <p className="text-xs text-slate-700 leading-relaxed font-medium">
+              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                 {submissionResult.message}
               </p>
               {submissionResult.factors && (
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-1 text-xs">
-                  <span className="font-bold text-slate-800 text-[11px] block">Key Risk Drivers:</span>
-                  <ul className="list-disc list-inside text-slate-600 space-y-0.5 text-[11px]">
+                <div className="bg-slate-50 dark:bg-slate-800/80 p-3 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-1 text-xs">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 text-[11px] block">Key Risk Drivers:</span>
+                  <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-0.5 text-[11px]">
                     {submissionResult.factors.map((f, i) => (
                       <li key={i}>{f}</li>
                     ))}
@@ -393,9 +393,9 @@ export const AshaDashboard = () => {
           )}
 
           {/* Recent Reports in Village */}
-          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h3 className="font-bold text-slate-900 text-sm">Recent Village Case Logs</h3>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 transition-colors">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Recent Village Case Logs</h3>
               <span className="text-[11px] text-slate-400">{recentReports.length} records</span>
             </div>
 
@@ -406,15 +406,15 @@ export const AshaDashboard = () => {
                 </div>
               ) : (
                 recentReports.map((rep, idx) => (
-                  <div key={idx} className="p-3 rounded-2xl border border-slate-100 bg-slate-50/60 text-xs space-y-1.5">
+                  <div key={idx} className="p-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 text-xs space-y-1.5">
                     <div className="flex items-start justify-between">
-                      <span className="font-bold text-slate-900">{rep.village} ({rep.approx_cases} Cases)</span>
+                      <span className="font-bold text-slate-900 dark:text-white">{rep.village} ({rep.approx_cases} Cases)</span>
                       <span className="text-[10px] text-slate-400 font-mono">{rep.date}</span>
                     </div>
-                    <div className="text-[11px] text-slate-600 truncate">
+                    <div className="text-[11px] text-slate-600 dark:text-slate-300 truncate">
                       Symptoms: {Array.isArray(rep.symptoms) ? rep.symptoms.join(', ') : rep.symptoms}
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] text-teal-700 font-semibold pt-1">
+                    <div className="flex items-center gap-2 text-[10px] text-teal-700 dark:text-teal-400 font-semibold pt-1">
                       <span>Source: {rep.water_source}</span>
                       <span>•</span>
                       <span>Age: {rep.age_group}</span>

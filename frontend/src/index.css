@@ -6,6 +6,42 @@
   body {
     font-family: 'Inter', sans-serif;
   }
+
+  /* High contrast readable input styles for both light and dark mode */
+  input, select, textarea {
+    color: #0f172a;
+    background-color: #ffffff;
+  }
+  
+  .dark input, .dark select, .dark textarea {
+    color: #f8fafc !important;
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+  }
+
+  /* Disabled/Readonly input states */
+  input:disabled, input[readonly], select:disabled, textarea:disabled {
+    background-color: #f1f5f9;
+    color: #1e293b !important;
+    font-weight: 700;
+  }
+  
+  .dark input:disabled, .dark input[readonly], .dark select:disabled, .dark textarea:disabled {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+    font-weight: 700;
+  }
+
+  /* Form placeholders */
+  ::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
+  }
+
+  .dark ::placeholder {
+    color: #64748b !important;
+    opacity: 1;
+  }
 }
 
 /* Custom Scrollbar */
@@ -21,7 +57,6 @@
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-thumb {
   background: #334155;
