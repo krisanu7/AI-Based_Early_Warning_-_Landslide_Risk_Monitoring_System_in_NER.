@@ -4,7 +4,7 @@ import { casesApi, waterApi, riskApi } from '../api/client';
 import { RiskBadge } from '../components/common/RiskBadge';
 import { MetricCard } from '../components/common/MetricCard';
 import { getOfflineQueue } from '../utils/offlineQueue';
-import { 
+import {   
   ClipboardList, 
   Wifi, 
   WifiOff, 

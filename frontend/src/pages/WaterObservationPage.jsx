@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { waterApi } from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { 
+import {  
   Droplets, 
   FlaskConical, 
   CheckCircle2, 
