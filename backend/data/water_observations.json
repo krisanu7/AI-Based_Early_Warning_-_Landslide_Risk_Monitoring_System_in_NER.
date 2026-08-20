@@ -1,0 +1,22 @@
+[
+  {
+    "state": "Meghalaya",
+    "district": "Majuli",
+    "village": "Garamur",
+    "water_source": "Handpump",
+    "turbidity_ntu": 14.5,
+    "ph_level": 6.8,
+    "coliform_presence": true,
+    "residual_chlorine_ppm": 0.1,
+    "odor_taste": "Normal",
+    "is_flood_affected": true,
+    "observation_date": "2026-08-16",
+    "notes": "Presumptive black precipitate in H2S paper strip test.",
+    "submitted_by": "krisanu samanta",
+    "submitted_by_role": "ASHA",
+    "created_at": "2026-08-16T03:07:04.356924",
+    "water_quality_rating": "Moderately Contaminated",
+    "id": "ec36a652-7cd9-4861-824c-ab6aaa5a5718",
+    "_id": "ec36a652-7cd9-4861-824c-ab6aaa5a5718"
+  }
+]

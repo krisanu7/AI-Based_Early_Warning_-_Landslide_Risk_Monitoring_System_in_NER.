@@ -1,0 +1,17 @@
+[
+  {
+    "id": "PUB-WARN-2026-001",
+    "alert_id": "ALT-MAJULI-001",
+    "state": "Assam",
+    "district": "Majuli",
+    "area_covered": "Garamur, Kamalabari & adjoining riverbank settlements",
+    "headline": "OFFICIAL PUBLIC HEALTH WARNING: Confirmed Water-Borne Disease Outbreak Signal",
+    "message": "Confirmed water-borne disease outbreak signal verified in this area following monsoon flood inundation. Residents are strictly advised to consume safe/boiled drinking water, avoid identified unsafe river/pond sources, maintain strict hand hygiene with soap, use ORS immediately at symptom onset, and seek medical attention at Garamur PHC if symptoms develop.",
+    "emergency_contact": "Majuli District Health Control Room: 104 / +91 3775 274400",
+    "approved_by": "District Magistrate & Health Surveillance Officer, Majuli",
+    "issue_date": "2026-08-16",
+    "status": "ACTIVE",
+    "_id": "PUB-WARN-2026-001",
+    "created_at": "2026-08-16T02:50:10.930464"
+  }
+]

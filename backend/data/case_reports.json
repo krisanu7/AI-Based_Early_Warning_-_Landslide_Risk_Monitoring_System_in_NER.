@@ -1,0 +1,139 @@
+[
+  {
+    "state": "Assam",
+    "district": "Majuli",
+    "village": "Garamur",
+    "date": "2026-08-15",
+    "symptoms": [
+      "Acute Watery Diarrhea",
+      "Severe Vomiting",
+      "Dehydration & Lethargy"
+    ],
+    "approx_cases": 14,
+    "age_group": "0-5",
+    "water_source": "River/Stream",
+    "sanitation_status": "Poor Sanitation",
+    "water_environment_notes": "Brahmaputra tributary overflow inundated shallow tube well platform. Turbid floodwater.",
+    "reporter_name": "Priyanka Kalita",
+    "reporter_role": "ASHA",
+    "latitude": 26.9634,
+    "longitude": 94.2144,
+    "created_at": "2026-08-14T22:50:10.821039",
+    "id": "ff6f6891-7a5e-4098-a780-c56709393ef9",
+    "_id": "ff6f6891-7a5e-4098-a780-c56709393ef9"
+  },
+  {
+    "state": "Assam",
+    "district": "Majuli",
+    "village": "Kamalabari",
+    "date": "2026-08-16",
+    "symptoms": [
+      "Acute Watery Diarrhea",
+      "Stomach Cramps",
+      "Dehydration & Lethargy"
+    ],
+    "approx_cases": 10,
+    "age_group": "6-18",
+    "water_source": "River/Stream",
+    "sanitation_status": "Poor Sanitation",
+    "water_environment_notes": "Continuous floodwater inundation near community ghat. High turbidity.",
+    "reporter_name": "Rini Riba",
+    "reporter_role": "ANM",
+    "latitude": 26.94,
+    "longitude": 94.18,
+    "created_at": "2026-08-15T12:50:10.821039",
+    "id": "4868779f-f573-42c5-a556-631e8fb4a64b",
+    "_id": "4868779f-f573-42c5-a556-631e8fb4a64b"
+  },
+  {
+    "state": "Assam",
+    "district": "Dhubri",
+    "village": "Bilasipara",
+    "date": "2026-08-16",
+    "symptoms": [
+      "Acute Watery Diarrhea",
+      "High Fever",
+      "Stomach Cramps"
+    ],
+    "approx_cases": 11,
+    "age_group": "19-50",
+    "water_source": "River/Stream",
+    "sanitation_status": "Pit Latrine",
+    "water_environment_notes": "Heavy rainfall caused surface runoff into open pond. H2S vial presumptive positive.",
+    "reporter_name": "ASHA Bilasipara",
+    "reporter_role": "ASHA",
+    "latitude": 26.23,
+    "longitude": 90.23,
+    "created_at": "2026-08-15T20:50:10.821039",
+    "id": "4a19dce2-e2b0-4a40-80d0-f92ad0217e06",
+    "_id": "4a19dce2-e2b0-4a40-80d0-f92ad0217e06"
+  },
+  {
+    "state": "Assam",
+    "district": "Majuli",
+    "village": "Garamur",
+    "date": "2026-08-16",
+    "symptoms": [
+      "Acute Watery Diarrhea",
+      "Severe Vomiting",
+      "Dehydration & Lethargy"
+    ],
+    "approx_cases": 18,
+    "age_group": "0-5",
+    "water_source": "River/Stream",
+    "sanitation_status": "Poor Sanitation",
+    "water_environment_notes": "SIMULATED SURGE: Extreme monsoon flood waterlogging, tube well submerged.",
+    "reporter_name": "Simulated Live Feed",
+    "reporter_role": "ASHA",
+    "latitude": 26.9634,
+    "longitude": 94.2144,
+    "created_at": "2026-08-16T02:58:08.254043",
+    "id": "d041fa8e-cd7e-4e45-a698-f32176e66fcd",
+    "_id": "d041fa8e-cd7e-4e45-a698-f32176e66fcd"
+  },
+  {
+    "state": "Meghalaya",
+    "district": "Majuli",
+    "village": "Garamur",
+    "date": "2026-08-16",
+    "symptoms": [
+      "Acute Watery Diarrhea",
+      "Severe Vomiting"
+    ],
+    "approx_cases": 3,
+    "age_group": "0-5",
+    "water_source": "River/Stream",
+    "sanitation_status": "Poor Sanitation",
+    "water_environment_notes": "",
+    "reporter_name": "krisanu samanta",
+    "reporter_role": "ASHA",
+    "latitude": 26.9634,
+    "longitude": 94.2144,
+    "created_at": "2026-08-16T03:04:31.454196",
+    "id": "e2791dd8-e853-48c9-ad4c-2b4765168ccb",
+    "_id": "e2791dd8-e853-48c9-ad4c-2b4765168ccb"
+  },
+  {
+    "state": "Assam",
+    "district": "Majuli",
+    "village": "Garamur",
+    "date": "2026-08-16",
+    "symptoms": [
+      "Acute Watery Diarrhea",
+      "Severe Vomiting",
+      "Dehydration & Lethargy"
+    ],
+    "approx_cases": 18,
+    "age_group": "0-5",
+    "water_source": "River/Stream",
+    "sanitation_status": "Poor Sanitation",
+    "water_environment_notes": "SIMULATED SURGE: Extreme monsoon flood waterlogging, tube well submerged.",
+    "reporter_name": "Simulated Live Feed",
+    "reporter_role": "ASHA",
+    "latitude": 26.9634,
+    "longitude": 94.2144,
+    "created_at": "2026-08-16T03:09:02.263185",
+    "id": "ffed0af6-9d85-419f-8f6f-872094f71984",
+    "_id": "ffed0af6-9d85-419f-8f6f-872094f71984"
+  }
+]
