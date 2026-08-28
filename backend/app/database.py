@@ -1,164 +1,105 @@
-import os
-import uuid
-from typing import Dict, Any, List, Optional
-from datetime import datetime
-from bson import ObjectId, Decimal128
-from pymongo import MongoClient
-import motor.motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 from app.config import settings
+from bson import ObjectId, Decimal128
+from datetime import datetime, date
 
-# Active MongoDB Connection URL
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017/")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "swasthya_jal_db")
+client: AsyncIOMotorClient = None
+db = None
 
-print(f"Connecting to MongoDB at: {MONGODB_URL} [Database: {DATABASE_NAME}]")
-
-# Motor Async Client for FastAPI
-motor_client = motor.motor_asyncio.AsyncIOMotorClient(
-    MONGODB_URL,
-    serverSelectionTimeoutMS=3000
-)
-db_instance = motor_client[DATABASE_NAME]
-
-# Synchronous PyMongo Client for metadata and stats
-sync_client = MongoClient(MONGODB_URL, serverSelectionTimeoutMS=3000)
-sync_db = sync_client[DATABASE_NAME]
-
-def sanitize_mongo_doc(doc: Any) -> Any:
-    """Recursively converts BSON ObjectId, Decimal128, and nested types to JSON-serializable primitives."""
+def sanitize_mongo_doc(doc):
+    """
+    Recursively converts BSON ObjectId, Decimal128, and datetime objects
+    into standard JSON-serializable Python types.
+    """
     if doc is None:
         return None
     if isinstance(doc, list):
         return [sanitize_mongo_doc(item) for item in doc]
     if isinstance(doc, dict):
-        new_doc = {}
+        sanitized = {}
         for k, v in doc.items():
             if k == "_id":
-                str_id = str(v)
-                new_doc["_id"] = str_id
-                if "id" not in doc:
-                    new_doc["id"] = str_id
-            elif isinstance(v, (ObjectId, Decimal128)):
-                new_doc[k] = str(v)
+                sanitized["id"] = str(v)
+            elif isinstance(v, ObjectId):
+                sanitized[k] = str(v)
+            elif isinstance(v, Decimal128):
+                sanitized[k] = float(v.to_decimal())
+            elif isinstance(v, (datetime, date)):
+                sanitized[k] = v.isoformat()
+            elif isinstance(v, (dict, list)):
+                sanitized[k] = sanitize_mongo_doc(v)
             else:
-                new_doc[k] = sanitize_mongo_doc(v)
-        if "id" not in new_doc and "_id" in new_doc:
-            new_doc["id"] = new_doc["_id"]
-        return new_doc
-    if isinstance(doc, (ObjectId, Decimal128)):
-        return str(doc)
+                sanitized[k] = v
+        if "_id" in doc and "id" not in sanitized:
+            sanitized["id"] = str(doc["_id"])
+        return sanitized
     return doc
 
-# Clean wrapper to ensure consistent dict format with string IDs
 class MongoCollectionWrapper:
-    def __init__(self, collection):
-        self.collection = collection
-        self.name = collection.name
+    """Wrapper that ensures all query results are sanitized."""
+    def __init__(self, raw_collection):
+        self._col = raw_collection
 
-    async def find_one(self, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        q = dict(query)
-        if "id" in q and "_id" not in q:
-            val = q.pop("id")
-            q["$or"] = [{"id": val}, {"_id": val}]
-            
-        doc = await self.collection.find_one(q)
+    async def find_one(self, *args, **kwargs):
+        doc = await self._col.find_one(*args, **kwargs)
         return sanitize_mongo_doc(doc)
 
-    async def find(self, query: Optional[Dict[str, Any]] = None, sort: Optional[List] = None, limit: int = 0) -> List[Dict[str, Any]]:
-        q = dict(query) if query else {}
-        cursor = self.collection.find(q)
-        if sort:
-            cursor = cursor.sort(sort)
-        if limit > 0:
-            cursor = cursor.limit(limit)
-            
-        results = []
-        async for doc in cursor:
-            results.append(sanitize_mongo_doc(doc))
-        return results
+    async def find(self, *args, **kwargs):
+        cursor = self._col.find(*args, **kwargs)
+        docs = await cursor.to_list(length=1000)
+        return [sanitize_mongo_doc(d) for d in docs]
 
-    async def insert_one(self, document: Dict[str, Any]):
-        doc = dict(document)
-        if "id" not in doc:
-            doc["id"] = str(uuid.uuid4())
-        if "_id" not in doc:
-            doc["_id"] = doc["id"]
-        if "created_at" not in doc:
-            doc["created_at"] = datetime.utcnow().isoformat()
-            
-        await self.collection.insert_one(doc)
-        class InsertResult:
-            inserted_id = doc["id"]
-        return InsertResult()
+    async def insert_one(self, doc, *args, **kwargs):
+        return await self._col.insert_one(doc, *args, **kwargs)
 
-    async def insert_many(self, documents: List[Dict[str, Any]]):
-        docs = []
-        ids = []
-        for d in documents:
-            doc = dict(d)
-            if "id" not in doc:
-                doc["id"] = str(uuid.uuid4())
-            if "_id" not in doc:
-                doc["_id"] = doc["id"]
-            if "created_at" not in doc:
-                doc["created_at"] = datetime.utcnow().isoformat()
-            docs.append(doc)
-            ids.append(doc["id"])
-        if docs:
-            await self.collection.insert_many(docs)
-        return ids
+    async def insert_many(self, docs, *args, **kwargs):
+        return await self._col.insert_many(docs, *args, **kwargs)
 
-    async def update_one(self, query: Dict[str, Any], update: Dict[str, Any]):
-        q = dict(query)
-        if "id" in q and "_id" not in q:
-            val = q.pop("id")
-            q["$or"] = [{"id": val}, {"_id": val}]
-        return await self.collection.update_one(q, update, upsert=True)
+    async def update_one(self, *args, **kwargs):
+        return await self._col.update_one(*args, **kwargs)
 
-    async def delete_one(self, query: Dict[str, Any]):
-        q = dict(query)
-        if "id" in q and "_id" not in q:
-            val = q.pop("id")
-            q["$or"] = [{"id": val}, {"_id": val}]
-        res = await self.collection.delete_one(q)
-        return res.deleted_count > 0
+    async def update_many(self, *args, **kwargs):
+        return await self._col.update_many(*args, **kwargs)
 
-    async def count_documents(self, query: Optional[Dict[str, Any]] = None) -> int:
-        q = dict(query) if query else {}
-        return await self.collection.count_documents(q)
+    async def delete_one(self, *args, **kwargs):
+        return await self._col.delete_one(*args, **kwargs)
 
-def get_db():
-    return db_instance
+    async def delete_many(self, *args, **kwargs):
+        return await self._col.delete_many(*args, **kwargs)
+
+    async def count_documents(self, *args, **kwargs):
+        return await self._col.count_documents(*args, **kwargs)
+
+def connect_db():
+    global client, db
+    try:
+        client = AsyncIOMotorClient(settings.MONGODB_URL)
+        db = client[settings.DATABASE_NAME]
+        print(f"Connected to MongoDB database: {settings.DATABASE_NAME}")
+    except Exception as e:
+        print(f"Failed to connect to MongoDB: {e}")
+
+def close_db():
+    global client
+    if client:
+        client.close()
+        print("Closed MongoDB connection")
 
 def get_collection(name: str) -> MongoCollectionWrapper:
-    return MongoCollectionWrapper(db_instance[name])
+    global db
+    if db is None:
+        client_local = AsyncIOMotorClient(settings.MONGODB_URL)
+        db = client_local[settings.DATABASE_NAME]
+    return MongoCollectionWrapper(db[name])
 
-def get_mongodb_stats() -> Dict[str, Any]:
-    """Inspects live MongoDB server health, connection status, and collection statistics."""
-    try:
-        server_info = sync_client.server_info()
-        db_stats = sync_db.command("dbstats")
-        collections = sync_db.list_collection_names()
-        
-        col_details = []
-        for col_name in collections:
-            cnt = sync_db[col_name].count_documents({})
-            col_details.append({"name": col_name, "count": int(cnt)})
-            
-        return {
-            "status": "CONNECTED",
-            "mongodb_url": MONGODB_URL,
-            "database_name": DATABASE_NAME,
-            "version": str(server_info.get("version", "8.0")),
-            "collections_count": int(len(collections)),
-            "total_documents": int(sum(c["count"] for c in col_details)),
-            "storage_size_bytes": float(db_stats.get("storageSize", 0)),
-            "data_size_bytes": float(db_stats.get("dataSize", 0)),
-            "collections": col_details
-        }
-    except Exception as e:
-        return {
-            "status": "ERROR",
-            "mongodb_url": MONGODB_URL,
-            "error": str(e)
-        }
+# Explicit collection helpers for Landslide AI
+def get_users_col(): return get_collection("users")
+def get_locations_col(): return get_collection("locations")
+def get_field_reports_col(): return get_collection("field_reports")
+def get_alerts_col(): return get_collection("alerts")
+def get_infrastructure_col(): return get_collection("infrastructure")
+def get_evacuation_centers_col(): return get_collection("evacuation_centers")
+def get_landslide_history_col(): return get_collection("landslide_history")
+def get_environmental_data_col(): return get_collection("environmental_data")
+def get_audit_logs_col(): return get_collection("audit_logs")
+def get_system_metrics_col(): return get_collection("system_metrics")

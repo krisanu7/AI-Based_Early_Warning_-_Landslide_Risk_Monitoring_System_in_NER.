@@ -1,57 +1,66 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authApi, casesApi } from '../api/client';
-import { getOfflineQueue, clearOfflineQueue } from '../utils/offlineQueue';
+import { authApi, syncApi } from '../api/client';
+import { getOfflineCount } from '../utils/offlineQueue';
 
 const AuthContext = createContext(null);
 
-export const DEMO_ACCOUNTS = [
-  { label: 'ASHA Worker', email: 'asha@swasthyajal.gov.in', password: 'password123', role: 'ASHA', name: 'Priyanka Kalita (ASHA)', loc: 'Majuli, Assam' },
-  { label: 'ANM Staff', email: 'anm@swasthyajal.gov.in', password: 'password123', role: 'ANM', name: 'Rini Riba (ANM)', loc: 'Majuli, Assam' },
-  { label: 'PHC Medical Officer', email: 'doctor@swasthyajal.gov.in', password: 'password123', role: 'MEDICAL_STAFF', name: 'Dr. Bhaskar Sarma', loc: 'Garamur PHC' },
-  { label: 'District/State Authority', email: 'authority@swasthyajal.gov.in', password: 'password123', role: 'AUTHORITY', name: 'Dr. A. K. Baruah (Surveillance Officer)', loc: 'Assam Health Directorate' },
-  { label: 'System Admin', email: 'admin@swasthyajal.gov.in', password: 'password123', role: 'ADMIN', name: 'State IT Director', loc: 'Dispur HQ' },
-  { label: 'Public Citizen', email: 'public@swasthyajal.gov.in', password: 'password123', role: 'PUBLIC', name: 'Citizen / Community', loc: 'Northeast Region' },
-];
+const DEFAULT_DEMO_USER = {
+  id: 'demo-district',
+  name: 'Dr. Subhashish Deb (District Disaster Officer)',
+  email: 'district@swasthyajal.gov.in',
+  role: 'DISTRICT_OFFICER',
+  state: 'Assam',
+  district: 'Dima Hasao',
+  village: 'District Emergency Operations Centre',
+  designation: 'DDMA Incident Commander & Verification Officer'
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const cached = localStorage.getItem('swasthya_user');
-    return cached ? JSON.parse(cached) : null;
+    const saved = localStorage.getItem('ner_landslide_user');
+    return saved ? JSON.parse(saved) : DEFAULT_DEMO_USER;
   });
-  const [loading, setLoading] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [offlinePendingCount, setOfflinePendingCount] = useState(getOfflineQueue().length);
-  const [syncMessage, setSyncMessage] = useState(null);
 
-  // Sync offline queue when back online
+  const [token, setToken] = useState(() => localStorage.getItem('ner_landslide_token') || 'demo-jwt-token');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [offlinePendingCount, setOfflinePendingCount] = useState(0);
+  const [syncStatus, setSyncStatus] = useState(null);
+
+  const refreshOfflineCount = async () => {
+    try {
+      const count = await getOfflineCount();
+      setOfflinePendingCount(count);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
+    refreshOfflineCount();
+
     const handleOnline = async () => {
       setIsOnline(true);
-      const queue = getOfflineQueue();
-      if (queue.length > 0) {
-        setSyncMessage(`Internet restored! Synchronizing ${queue.length} offline case reports...`);
-        try {
-          await casesApi.syncBatch(queue);
-          clearOfflineQueue();
-          setOfflinePendingCount(0);
-          setSyncMessage(`Successfully synced ${queue.length} offline records to health grid.`);
-          setTimeout(() => setSyncMessage(null), 5000);
-        } catch (e) {
-          console.error('Offline auto-sync failed', e);
+      setSyncStatus('syncing');
+      try {
+        const result = await syncApi.syncPendingQueue();
+        if (result.synced_count > 0) {
+          setSyncStatus(`Successfully synchronized ${result.synced_count} field reports.`);
+        } else {
+          setSyncStatus(null);
         }
+      } catch (err) {
+        console.error('Auto sync failed', err);
+      } finally {
+        refreshOfflineCount();
       }
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      setSyncMessage('Offline mode active. Case reports will be securely stored locally.');
     };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
-    // Initial check
-    setOfflinePendingCount(getOfflineQueue().length);
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -59,86 +68,73 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const login = async (email, password) => {
-    setLoading(true);
+  const login = async (credentials) => {
+    const res = await authApi.login(credentials);
+    setUser(res.data.user);
+    setToken(res.data.access_token);
+    localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
+    localStorage.setItem('ner_landslide_token', res.data.access_token);
+    return res.data;
+  };
+
+  const switchDemoRole = async (role) => {
     try {
-      const res = await authApi.login({ email, password });
-      const { access_token, user: userData } = res.data;
-      localStorage.setItem('swasthya_token', access_token);
-      localStorage.setItem('swasthya_user', JSON.stringify(userData));
-      setUser(userData);
-      return userData;
-    } finally {
-      setLoading(false);
+      const res = await authApi.demoLogin(role);
+      setUser(res.data.user);
+      setToken(res.data.access_token);
+      localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
+      localStorage.setItem('ner_landslide_token', res.data.access_token);
+    } catch (err) {
+      console.error('Demo switch failed, applying local fallback', err);
+      // Local fallback if backend is momentarily reloading
+      const roleMap = {
+        FIELD_WORKER: { name: "Arun Bordoloi (Ground Surveyor)", role: "FIELD_WORKER", district: "Dima Hasao", village: "Haflong" },
+        BLOCK_OFFICER: { name: "Nandita Hazarika (Block Officer)", role: "BLOCK_OFFICER", district: "Dima Hasao", village: "Haflong Block HQ" },
+        DISTRICT_OFFICER: { name: "Dr. Subhashish Deb (District Officer)", role: "DISTRICT_OFFICER", district: "Dima Hasao", village: "District EOC" },
+        AUTHORITY: { name: "Smt. K. Sangma (State Disaster Authority)", role: "AUTHORITY", district: "East Khasi Hills", village: "State EOC" },
+        ADMIN: { name: "System Administrator", role: "ADMIN", district: "Guwahati HQ", village: "Dispur EOC" },
+        PUBLIC: { name: "Public Citizen", role: "PUBLIC", district: "Dima Hasao", village: "Haflong" }
+      };
+      const fallback = roleMap[role] || roleMap.DISTRICT_OFFICER;
+      const fullUser = { ...fallback, email: `${role.toLowerCase()}@swasthyajal.gov.in`, state: "Assam" };
+      setUser(fullUser);
+      localStorage.setItem('ner_landslide_user', JSON.stringify(fullUser));
     }
   };
 
-  const loginDemo = async (roleKey) => {
-    const target = DEMO_ACCOUNTS.find(a => a.role === roleKey || a.email.includes(roleKey.toLowerCase()));
-    if (target) {
-      return await login(target.email, target.password);
-    }
-  };
-
-  const register = async (userData) => {
-    setLoading(true);
+  const manualSync = async () => {
+    setSyncStatus('syncing');
     try {
-      const res = await authApi.register(userData);
-      const { access_token, user: newUser } = res.data;
-      localStorage.setItem('swasthya_token', access_token);
-      localStorage.setItem('swasthya_user', JSON.stringify(newUser));
-      setUser(newUser);
-      return newUser;
-    } finally {
-      setLoading(false);
+      const result = await syncApi.syncPendingQueue();
+      await refreshOfflineCount();
+      setSyncStatus(`Synchronized ${result.synced_count || 0} reports.`);
+      setTimeout(() => setSyncStatus(null), 4000);
+      return result;
+    } catch (e) {
+      console.error(e);
+      setSyncStatus('Sync failed. Please check network connection.');
+      setTimeout(() => setSyncStatus(null), 4000);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('swasthya_token');
-    localStorage.removeItem('swasthya_user');
-    setUser(null);
-  };
-
-  const refreshOfflineCount = () => {
-    setOfflinePendingCount(getOfflineQueue().length);
-  };
-
-  const manualSync = async () => {
-    const queue = getOfflineQueue();
-    if (queue.length === 0) return 0;
-    setLoading(true);
-    try {
-      const res = await casesApi.syncBatch(queue);
-      clearOfflineQueue();
-      setOfflinePendingCount(0);
-      setSyncMessage(`Manually synced ${queue.length} reports successfully.`);
-      setTimeout(() => setSyncMessage(null), 4000);
-      return res.data;
-    } finally {
-      setLoading(false);
-    }
+    setUser(DEFAULT_DEMO_USER);
+    localStorage.removeItem('ner_landslide_user');
+    localStorage.removeItem('ner_landslide_token');
   };
 
   return (
     <AuthContext.Provider value={{
       user,
-      loading,
+      token,
+      login,
+      logout,
+      switchDemoRole,
       isOnline,
       offlinePendingCount,
-      syncMessage,
-      login,
-      loginDemo,
-      register,
-      logout,
-      manualSync,
       refreshOfflineCount,
-      isAsha: user?.role === 'ASHA',
-      isAnm: user?.role === 'ANM',
-      isDoctor: user?.role === 'MEDICAL_STAFF',
-      isAuthority: user?.role === 'AUTHORITY',
-      isAdmin: user?.role === 'ADMIN',
-      isPublic: !user || user?.role === 'PUBLIC'
+      manualSync,
+      syncStatus
     }}>
       {children}
     </AuthContext.Provider>

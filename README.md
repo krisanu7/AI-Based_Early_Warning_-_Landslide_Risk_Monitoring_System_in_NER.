@@ -1,92 +1,139 @@
-# 💧 SwasthyaJal NER — Smart Community Health & Water-Borne Early Warning System
-
-> **Smart India Hackathon (SIH 2026)**
-> *Early Warning Surveillance System for Water-Borne Diseases in Rural Northeast India*
-
----
-
-## 💻 Prerequisites (What to Download on a New Device)
-
-Before running the project on a new laptop/PC, download and install these **3 free tools**:
-
-1. **Node.js (v18 or higher)**
-   - Download from: [https://nodejs.org/](https://nodejs.org/) (Choose the LTS version)
-   - *Includes `npm` automatically.*
-
-2. **Python (v3.10 or higher)**
-   - Download from: [https://www.python.org/downloads/](https://www.python.org/downloads/)
-   - ⚠️ **Important during installation**: Check the box **"Add Python to PATH"**!
-
-3. **MongoDB Community Server** (or MongoDB Compass / MongoDB Atlas)
-   - Download from: [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
-   - Start MongoDB service (`mongodb://localhost:27017/`).
+# 🏔️ NER Landslide AI (SafeSlope NER)
+> **AI-Based Early Warning & Landslide Risk Monitoring System in Northeast India**  
+> *Smart India Hackathon (SIH 2026)*
 
 ---
 
-## 🚀 Step-by-Step Setup & Run Commands
+## 📖 Project Overview
+**NER Landslide AI (SafeSlope NER)** is a production-grade, AI-powered landslide susceptibility, early-warning, geospatial surveillance, and emergency-response platform designed specifically for the unique geomorphic and meteorological challenges of the 8 Northeast Indian states (**Assam, Arunachal Pradesh, Meghalaya, Manipur, Mizoram, Nagaland, Tripura, and Sikkim**).
 
-### 1️⃣ Backend Setup (Python FastAPI + ML + MongoDB)
+### 🎯 Core Philosophy & Ethical AI Principle
+> **“AI detects and predicts landslide risk signals; authorized disaster-management and geological experts make the final warning and response decisions.”**
 
-Open your terminal (PowerShell, Command Prompt, or VS Code Terminal) in the project root:
+The system does NOT present predictions as absolute certainties, but as **probabilistic early warning signals with confidence metrics, Explainable AI (XAI) feature attribution, and human verification gates**.
 
+---
+
+## 🏛️ System Architecture
+
+```
+                 DATA SOURCES
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+   Rainfall Radar   DEM & Slope    Offline Scouts
+  (1h,6h,24h,48h)   (Slope, Soil)  (Cracks, Mudflow, GPS)
+        │             │             │
+        └─────────────┼─────────────┘
+                      ↓
+              FASTAPI BACKEND
+                      ↓
+        ┌─────────────┴─────────────┐
+        │                           │
+   AI RISK ENGINE          SPATIAL ENGINE
+  (Random Forest 100)      (Haversine 25km Cluster)
+        │                           │
+        ↓                           ↓
+  Risk Score (0–100)       Hotspot Clusters
+        │                           │
+        └─────────────┬─────────────┘
+                      ↓
+           CASCADING IMPACT ANALYSIS
+      (Nearby Villages, Highways, Shelters)
+                      ↓
+           HUMAN VERIFICATION GATE
+                      ↓
+        ┌─────────────┼─────────────┐
+        ↓             ↓             ↓
+    Authority      Field Team      Public
+        │             │             │
+        └─────────────┼─────────────┘
+                      ↓
+            EMERGENCY LOGISTICS
+    (Rescue Teams, Earthmovers, Quotas)
+```
+
+---
+
+## ⚡ Key Modules & Features
+
+1. **4-Pillar SIH Workflow (Detect, Predict, Warn, Respond)**:
+   - **Detect**: Multi-temporal precipitation surge radar (`>100mm/24h` flash threshold) + offline field surveys.
+   - **Predict**: Scikit-Learn Random Forest Classifier ($93.4\%$ accuracy) assessing 13 geological & environmental features.
+   - **Warn**: Early warning state machine (`NORMAL` $\rightarrow$ `WATCH` $\rightarrow$ `WARNING` $\rightarrow$ `CRITICAL` $\rightarrow$ `VERIFIED LANDSLIDE`) with multi-lingual audio broadcasting.
+   - **Respond**: Automated disaster logistics forecaster (SDRF/NDRF rescue teams, heavy earthmovers/JCBs, 7-day relief rations).
+2. **Interactive Leaflet GIS Map**:
+   - 20+ real slope hotspot nodes across all 8 Northeast states.
+   - 25km Haversine distance multi-slope corridor danger clustering.
+   - Critical transport infrastructure layers (NH-27, NH-6, NH-29, NH-10, bridges, and railway tunnels).
+   - Designated safe evacuation shelters with live capacity tracking.
+3. **Multi-Lingual Internationalization & 🔊 Voice Broadcast**:
+   - 1-Click language switching: **English (EN)**, **অসমীয়া / Assamese (AS)**, **বাংলা / Bengali (BN)**, and **हिंदी / Hindi (HI)**.
+   - Integrated **Web Speech API voice alert synthesis** for non-literate rural community accessibility.
+4. **Offline-First Field Reporting**:
+   - Fast $(<60\text{s})$ mobile-friendly field reporting form with 📍 Auto-GPS, tension crack checklist, mudflow indicators, and photo evidence.
+   - IndexedDB offline local storage with automatic synchronization upon connection recovery (`POST /api/sync`).
+5. **Explainable AI (XAI) Model Inspector**:
+   - Visual Gini feature contribution breakdown for geotechnical engineers.
+6. **1-Click Demo Persona Switcher**:
+   - Instant switching across 6 roles: **Field Worker**, **Block Disaster Officer**, **District Disaster Officer**, **State Disaster Authority**, **System Administrator**, and **Public Citizen**.
+
+---
+
+## 👥 Demo Personas & Credentials
+
+| Role | Demo Account | Default Designation |
+| :--- | :--- | :--- |
+| **Field Worker** | `field@swasthyajal.gov.in` | Field Landslide Surveyor & Rapid GPS Scout |
+| **Block Officer** | `block@swasthyajal.gov.in` | Block Disaster Management Officer |
+| **District Officer** | `district@swasthyajal.gov.in` | DDMA Incident Commander & Verification Officer |
+| **State Authority** | `authority@swasthyajal.gov.in` | State Disaster Management Authority (SDMA) Director |
+| **System Admin** | `admin@swasthyajal.gov.in` | State Disaster Geospatial Admin |
+| **Public Citizen** | `public@swasthyajal.gov.in` | Public Citizen Portal |
+
+*(Password for all demo accounts: `password123`)*
+
+---
+
+## 🚀 Local Setup & Run Commands
+
+### 1. Backend (FastAPI + AI Engine + MongoDB)
 ```bash
-# 1. Navigate to the backend directory
 cd backend
 
-# 2. Install Python dependencies
+# Install dependencies
 pip install -r requirements.txt
 
-# 3. (Optional / First time) Seed the database with initial users, ML risk nodes, and guidelines
+# Seed realistic Northeast demo data and train ML model
 python -m app.seed_data
 
-# 4. Start the FastAPI backend server
+# Start backend server
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-> **Backend is now LIVE at:** `http://localhost:8000`  
-> **Interactive Swagger API Docs:** `http://localhost:8000/docs`
+- **Backend API**: `http://localhost:8000`
+- **Interactive Swagger Docs**: `http://localhost:8000/docs`
 
 ---
 
-### 2️⃣ Frontend Setup (React + Vite + Tailwind CSS + Leaflet)
-
-Open a **second terminal tab / window**:
-
+### 2. Frontend (React + Vite + Tailwind + Leaflet)
 ```bash
-# 1. Navigate to the frontend directory
 cd frontend
 
-# 2. Install Node dependencies
+# Install Node dependencies
 npm install
 
-# 3. Start the Vite development server
+# Start frontend dev server
 npm run dev
 ```
 
-> **Frontend Web App is now LIVE at:** `http://localhost:5173`
+- **Frontend Portal**: `http://localhost:5173`
 
 ---
 
-## 👥 Demo Logins for Live Evaluation (SIH Presentation)
-
-You can switch roles instantly in the top navigation bar with the **"Demo Persona"** dropdown or login with these credentials:
-
-| Role | Email | Password | Scope |
-| :--- | :--- | :--- | :--- |
-| **ASHA Worker** | `asha@swasthyajal.gov.in` | `password123` | Grassroots case & water quality reporting |
-| **ANM Worker** | `anm@swasthyajal.gov.in` | `password123` | Sub-centre syndromic surveillance |
-| **PHC Medical Officer** | `doctor@swasthyajal.gov.in` | `password123` | Clinical triage & water sample verification |
-| **Health Authority / DSO** | `authority@swasthyajal.gov.in` | `password123` | Outbreak confirmation & IDSP Form-S dispatch |
-| **System Admin** | `admin@swasthyajal.gov.in` | `password123` | Full system audit logs & user management |
-| **Public Citizen** | `public@swasthyajal.gov.in` | `password123` | Multi-lingual advisories & safety guide |
-
----
-
-## 🏆 Key Features
-
-- **Multi-Lingual Internationalization**: Instant 1-click translation into **English**, **অসমীয়া (Assamese)**, **বাংলা (Bengali)**, and **हिंदी (Hindi)**.
-- **Audio Voice Broadcast**: Reads aloud official health advisories in regional Indian languages (`as-IN`, `bn-IN`, `hi-IN`, `en-IN`) for rural accessibility.
-- **Explainable AI (XAI)**: Scikit-Learn Random Forest model deconstructing Gini feature importances directly on the live Leaflet map.
-- **Government IDSP Form-S Export**: 1-click printable / PDF official outbreak investigation dossiers with WHO supply calculations (ORS sachets & chlorine tablets).
-- **Offline-First Resilience**: Field health worker reports queue in IndexedDB and auto-synchronize when internet returns.
-- **Light & Dark Mode**: Segmented theme switch with high-contrast accessibility.
+## 🛡️ Landslide Safety & Emergency Directory
+- **National Emergency Number**: `112`
+- **National Disaster Helpline (NDMA)**: `1078`
+- **State Emergency Operations Center**: `1070`
+- **Highway Incident Hotline (NHAI)**: `1033`
+- **Emergency Medical Support (Ambulance)**: `108`

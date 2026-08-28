@@ -1,76 +1,73 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
-import { SafetyBanner } from './components/layout/SafetyBanner';
+import { DisasterSafetyBanner } from './components/layout/DisasterSafetyBanner';
+import { SIHPitchTourModal } from './components/modals/SIHPitchTourModal';
 
 import { LandingPage } from './pages/LandingPage';
-import { LoginPage } from './pages/LoginPage';
-import { AshaDashboard } from './pages/AshaDashboard';
-import { WaterObservationPage } from './pages/WaterObservationPage';
-import { MedicalDashboard } from './pages/MedicalDashboard';
-import { AuthorityDashboard } from './pages/AuthorityDashboard';
+import { MainDashboard } from './pages/MainDashboard';
+import { FieldSurveillancePage } from './pages/FieldSurveillancePage';
 import { AlertInvestigationPage } from './pages/AlertInvestigationPage';
-import { NortheastRiskMapPage } from './pages/NortheastRiskMapPage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
-import { DiseaseSafetyGuide } from './pages/DiseaseSafetyGuide';
-import { PublicWarningPage } from './pages/PublicWarningPage';
-import { AdminDashboard } from './pages/AdminDashboard';
+import { DisasterResponsePage } from './pages/DisasterResponsePage';
+import { InfrastructureRiskPage } from './pages/InfrastructureRiskPage';
+import { EvacuationDirectoryPage } from './pages/EvacuationDirectoryPage';
+import { PublicWarningsPage } from './pages/PublicWarningsPage';
+import { LandslideSafetyGuidePage } from './pages/LandslideSafetyGuidePage';
+import { HistoricalAnalyticsPage } from './pages/HistoricalAnalyticsPage';
+import { AdminModelMonitoringPage } from './pages/AdminModelMonitoringPage';
+import { LoginPage } from './pages/LoginPage';
 
-const AppLayout = ({ children }) => {
+function AppContent() {
+  const [sihTourOpen, setSihTourOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
-      <SafetyBanner />
-      <Navbar />
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors">
+      <Navbar onOpenSIHTour={() => setSihTourOpen(true)} />
+      <DisasterSafetyBanner />
+
+      <div className="flex-1 flex">
         <Sidebar />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0 overflow-y-auto">
-          {children}
+
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-full">
+          <Routes>
+            <Route path="/" element={<LandingPage onOpenSIHTour={() => setSihTourOpen(true)} />} />
+            <Route path="/dashboard" element={<MainDashboard />} />
+            <Route path="/map" element={<MainDashboard />} />
+            <Route path="/field-report" element={<FieldSurveillancePage />} />
+            <Route path="/investigation" element={<AlertInvestigationPage />} />
+            <Route path="/response" element={<DisasterResponsePage />} />
+            <Route path="/infrastructure" element={<InfrastructureRiskPage />} />
+            <Route path="/evacuation" element={<EvacuationDirectoryPage />} />
+            <Route path="/public-warnings" element={<PublicWarningsPage />} />
+            <Route path="/safety-guide" element={<LandslideSafetyGuidePage />} />
+            <Route path="/analytics" element={<HistoricalAnalyticsPage />} />
+            <Route path="/model-monitoring" element={<AdminModelMonitoringPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </main>
       </div>
+
+      <SIHPitchTourModal
+        isOpen={sihTourOpen}
+        onClose={() => setSihTourOpen(false)}
+      />
     </div>
   );
-};
+}
 
-export const App = () => {
+export default function App() {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Public Landing & Login */}
-              <Route path="/" element={<AppLayout><LandingPage /></AppLayout>} />
-              <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
-              
-              {/* Permanent 🛡️ Disease Safety Guide across all roles */}
-              <Route path="/disease-safety-guide" element={<AppLayout><DiseaseSafetyGuide /></AppLayout>} />
-
-              {/* Dashboards */}
-              <Route path="/dashboard/asha" element={<AppLayout><AshaDashboard /></AppLayout>} />
-              <Route path="/dashboard/medical" element={<AppLayout><MedicalDashboard /></AppLayout>} />
-              <Route path="/dashboard/authority" element={<AppLayout><AuthorityDashboard /></AppLayout>} />
-              <Route path="/dashboard/admin" element={<AppLayout><AdminDashboard /></AppLayout>} />
-
-              {/* Functional Surveillance Pages */}
-              <Route path="/cases/report" element={<AppLayout><AshaDashboard /></AppLayout>} />
-              <Route path="/water/observation" element={<AppLayout><WaterObservationPage /></AppLayout>} />
-              <Route path="/alerts/investigation" element={<AppLayout><AlertInvestigationPage /></AppLayout>} />
-              <Route path="/map" element={<AppLayout><NortheastRiskMapPage /></AppLayout>} />
-              <Route path="/analytics" element={<AppLayout><AnalyticsPage /></AppLayout>} />
-              <Route path="/public-warnings" element={<AppLayout><PublicWarningPage /></AppLayout>} />
-
-              {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </BrowserRouter>
-        </AuthProvider>
-      </LanguageProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <AppContent />
+        </LanguageProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
-};
-
-export default App;
+}

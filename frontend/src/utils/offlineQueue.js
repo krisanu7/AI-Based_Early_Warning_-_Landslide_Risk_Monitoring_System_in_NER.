@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'swasthya_jal_offline_cases';
+const STORAGE_KEY = 'ner_landslide_offline_reports';
 
 export const getOfflineQueue = () => {
   try {
@@ -10,10 +10,14 @@ export const getOfflineQueue = () => {
   }
 };
 
-export const addToOfflineQueue = (caseReport) => {
+export const getOfflineCount = () => {
+  return getOfflineQueue().length;
+};
+
+export const addToOfflineQueue = (reportItem) => {
   const queue = getOfflineQueue();
   const item = {
-    ...caseReport,
+    ...reportItem,
     _queued_at: new Date().toISOString(),
     _local_id: 'local_' + Math.random().toString(36).substring(2, 9)
   };

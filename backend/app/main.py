@@ -1,38 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 from app.config import settings
-from app.seed_data import seed_database
-from app.routers import (
-    auth_router,
-    cases_router,
-    water_router,
-    risk_router,
-    alerts_router,
-    analytics_router,
-    guidelines_router,
-    admin_router
-)
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup: Seed default roles, initial NE data, and Disease Safety Guidelines into MongoDB
-    try:
-        await seed_database()
-        print("SwasthyaJal NER MongoDB seeding complete.")
-    except Exception as e:
-        print(f"Database seed notice: {e}")
-    yield
-    print("SwasthyaJal NER backend shutdown gracefully.")
+from app.database import connect_db, close_db
+from app.routers import auth, dashboard, map, field_reports, alerts, infrastructure, evacuation, analytics, sync, prediction, health
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Smart Community Health Monitoring and Early Warning System for Water-Borne Diseases in Rural Northeast India (Smart India Hackathon)",
-    lifespan=lifespan
+    description="AI-Based Early Warning & Landslide Risk Monitoring System for Northeast India (SIH 2026)",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
-# Enable CORS for frontend local development
+# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -41,28 +21,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register Routers
-app.include_router(auth_router.router)
-app.include_router(cases_router.router)
-app.include_router(water_router.router)
-app.include_router(risk_router.router)
-app.include_router(alerts_router.router)
-app.include_router(analytics_router.router)
-app.include_router(guidelines_router.router)
-app.include_router(admin_router.router)
+@app.on_event("startup")
+async def startup_event():
+    connect_db()
+    print("NER Landslide AI Backend Started Successfully.")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    close_db()
+
+# Mount API Routers
+app.include_router(auth.router, prefix=settings.API_PREFIX)
+app.include_router(dashboard.router, prefix=settings.API_PREFIX)
+app.include_router(map.router, prefix=settings.API_PREFIX)
+app.include_router(field_reports.router, prefix=settings.API_PREFIX)
+app.include_router(alerts.router, prefix=settings.API_PREFIX)
+app.include_router(infrastructure.router, prefix=settings.API_PREFIX)
+app.include_router(evacuation.router, prefix=settings.API_PREFIX)
+app.include_router(analytics.router, prefix=settings.API_PREFIX)
+app.include_router(sync.router, prefix=settings.API_PREFIX)
+app.include_router(prediction.router, prefix=settings.API_PREFIX)
+app.include_router(health.router, prefix=settings.API_PREFIX)
 
 @app.get("/")
-async def root():
+def root():
     return {
-        "system": settings.PROJECT_NAME,
-        "version": settings.VERSION,
-        "mongodb_cluster": settings.MONGODB_URL,
-        "region_coverage": "Northeast India (8 States: Assam, Meghalaya, Arunachal Pradesh, Manipur, Mizoram, Nagaland, Tripura, Sikkim)",
-        "core_principle": "AI detects the signal; healthcare professionals make the decision.",
-        "safety_disclaimer": "AI provides outbreak-risk signals for authorized investigation. It does not provide medical diagnosis or medicine prescriptions.",
-        "status": "OPERATIONAL"
+        "project": "NER Landslide AI (SafeSlope NER)",
+        "purpose": "AI-Based Early Warning & Landslide Risk Monitoring System in NER — Smart India Hackathon (SIH 2026)",
+        "status": "OPERATIONAL",
+        "docs": "/docs",
+        "version": settings.VERSION
     }
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

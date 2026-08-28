@@ -1,65 +1,75 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { TRANSLATIONS, TRANSLATED_GUIDELINES } from '../utils/translations';
+import { translations } from '../i18n/translations';
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLangState] = useState(() => {
-    return localStorage.getItem('swasthya_lang') || 'EN';
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem('ner_landslide_language') || 'en';
   });
+  
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-  const setLang = (newLang) => {
-    setLangState(newLang);
-    localStorage.setItem('swasthya_lang', newLang);
-  };
+  useEffect(() => {
+    localStorage.setItem('ner_landslide_language', language);
+  }, [language]);
 
   const t = (key) => {
-    if (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) {
-      return TRANSLATIONS[lang][key];
+    if (!translations[language] || !translations[language][key]) {
+      return translations.en[key] || key;
     }
-    if (TRANSLATIONS.EN && TRANSLATIONS.EN[key]) {
-      return TRANSLATIONS.EN[key];
-    }
-    return key;
-  };
-
-  const getDiseaseContent = (diseaseName, fallback) => {
-    const dKey = diseaseName?.trim() || 'Diarrhea';
-    if (TRANSLATED_GUIDELINES[dKey] && TRANSLATED_GUIDELINES[dKey][lang]) {
-      return TRANSLATED_GUIDELINES[dKey][lang];
-    }
-    return fallback;
+    return translations[language][key];
   };
 
   const speak = (text) => {
-    if (!window.speechSynthesis) {
-      alert("Speech synthesis is not supported by your browser.");
+    if (!('speechSynthesis' in window)) {
+      alert("Text-to-speech is not supported on this browser.");
       return;
     }
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Set appropriate BCP 47 language code
-    if (lang === 'AS' || lang === 'BN') {
-      utterance.lang = 'bn-IN'; // Bengali/Assamese voice model
-    } else if (lang === 'HI') {
-      utterance.lang = 'hi-IN'; // Hindi voice model
-    } else {
-      utterance.lang = 'en-IN'; // English (India)
+    // Voice codes for Indian regional accents
+    const langMap = {
+      en: 'en-IN',
+      as: 'as-IN',
+      bn: 'bn-IN',
+      hi: 'hi-IN'
+    };
+    
+    utterance.lang = langMap[language] || 'en-IN';
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const matchingVoice = voices.find(v => v.lang === utterance.lang || v.lang.startsWith(utterance.lang.split('-')[0]));
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
     }
 
-    utterance.rate = 0.95; // Slightly slower for clarity in rural broadcast
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
     window.speechSynthesis.speak(utterance);
   };
 
   const stopSpeaking = () => {
-    if (window.speechSynthesis) {
+    if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
+      setIsSpeaking(false);
     }
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t, getDiseaseContent, speak, stopSpeaking }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, speak, stopSpeaking, isSpeaking }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -1,325 +1,131 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
-import { 
-  Activity, 
-  Sparkles, 
-  ShieldCheck, 
-  Lock, 
-  Mail, 
-  User, 
-  MapPin, 
-  ArrowRight,
-  AlertCircle
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Mountain, Lock, Mail, ArrowRight, UserCheck, Sparkles } from 'lucide-react';
+
+const QUICK_DEMO_USERS = [
+  { role: 'FIELD_WORKER', label: 'Field Scout (Arun Bordoloi)', email: 'field@swasthyajal.gov.in', color: 'emerald' },
+  { role: 'BLOCK_OFFICER', label: 'Block Officer (Nandita Hazarika)', email: 'block@swasthyajal.gov.in', color: 'blue' },
+  { role: 'DISTRICT_OFFICER', label: 'District Officer (Dr. Subhashish Deb)', email: 'district@swasthyajal.gov.in', color: 'amber' },
+  { role: 'AUTHORITY', label: 'State SDMA Director (Smt. K. Sangma)', email: 'authority@swasthyajal.gov.in', color: 'purple' },
+  { role: 'ADMIN', label: 'System Admin (Dispur HQ)', email: 'admin@swasthyajal.gov.in', color: 'rose' },
+  { role: 'PUBLIC', label: 'Public Citizen Portal', email: 'public@swasthyajal.gov.in', color: 'teal' }
+];
 
 export const LoginPage = () => {
-  const { login, register, loginDemo, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState('demo'); // 'demo', 'login', 'register'
+  const navigate = useNavigate();
+  const { login, switchDemoRole } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [role, setRole] = useState('ASHA');
-  const [state, setState] = useState('Assam');
-  const [district, setDistrict] = useState('Majuli');
-  const [village, setVillage] = useState('Garamur');
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleDemoClick = async (roleKey) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     setError(null);
     try {
-      await loginDemo(roleKey);
-      if (roleKey === 'ASHA' || roleKey === 'ANM') navigate('/dashboard/asha');
-      else if (roleKey === 'MEDICAL_STAFF') navigate('/dashboard/medical');
-      else if (roleKey === 'AUTHORITY') navigate('/dashboard/authority');
-      else if (roleKey === 'ADMIN') navigate('/dashboard/admin');
-      else navigate('/public-warnings');
-    } catch (e) {
-      setError('Login failed. Please check network connection.');
+      await login({ email, password });
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Authentication failed. Use 1-Click Demo Login below.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleCustomLogin = async (e) => {
-    e.preventDefault();
-    setError(null);
-    try {
-      const user = await login(email, password);
-      if (user.role === 'ASHA' || user.role === 'ANM') navigate('/dashboard/asha');
-      else if (user.role === 'MEDICAL_STAFF') navigate('/dashboard/medical');
-      else if (user.role === 'AUTHORITY') navigate('/dashboard/authority');
-      else if (user.role === 'ADMIN') navigate('/dashboard/admin');
-      else navigate('/public-warnings');
-    } catch (e) {
-      setError(e.response?.data?.detail || 'Invalid email or password.');
-    }
-  };
-
-  const handleCustomRegister = async (e) => {
-    e.preventDefault();
-    setError(null);
-    try {
-      const user = await register({
-        name,
-        email,
-        password,
-        role,
-        state,
-        district,
-        village,
-        facility_name: `${village} Health Unit`
-      });
-      if (user.role === 'ASHA' || user.role === 'ANM') navigate('/dashboard/asha');
-      else if (user.role === 'MEDICAL_STAFF') navigate('/dashboard/medical');
-      else if (user.role === 'AUTHORITY') navigate('/dashboard/authority');
-      else if (user.role === 'ADMIN') navigate('/dashboard/admin');
-      else navigate('/public-warnings');
-    } catch (e) {
-      setError(e.response?.data?.detail || 'Registration failed.');
-    }
+  const handleQuickDemo = async (role) => {
+    await switchDemoRole(role);
+    navigate('/dashboard');
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 space-y-6">
-      
-      {/* Brand Header */}
-      <div className="text-center space-y-2">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-teal-700 to-emerald-500 text-white flex items-center justify-center mx-auto shadow-md shadow-teal-700/20">
-          <Activity className="w-7 h-7" />
-        </div>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Access SwasthyaJal NER</h1>
-        <p className="text-xs text-slate-500 max-w-md mx-auto">
-          Role-Based Public Health Early Warning Portal for Northeast India
-        </p>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
+    <div className="min-h-[80vh] flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6">
         
-        <div className="flex border-b border-slate-200 pb-3 gap-2">
-          <button
-            onClick={() => setActiveTab('demo')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'demo'
-                ? 'bg-teal-700 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>1-Click Demo Logins (SIH)</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('login')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'login'
-                ? 'bg-teal-700 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            Standard Sign In
-          </button>
-          <button
-            onClick={() => setActiveTab('register')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-              activeTab === 'register'
-                ? 'bg-teal-700 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            New Registration
-          </button>
+        {/* Brand Header */}
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-rose-600 to-indigo-600 flex items-center justify-center text-white mx-auto shadow-md shadow-rose-600/25">
+            <Mountain className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            NER Landslide AI
+          </h1>
+          <p className="text-xs text-slate-500">
+            Sign in to access regional disaster command controls
+          </p>
         </div>
 
         {error && (
-          <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3 rounded-2xl text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-            <span>{error}</span>
+          <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold">
+            {error}
           </div>
         )}
 
-        {/* Tab 1: 1-Click Demo Accounts */}
-        {activeTab === 'demo' && (
-          <div className="space-y-4">
-            <div className="text-xs text-slate-500">
-              Select any role persona to instantly test workflows, ML predictions, and live map updates:
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.role}
-                  onClick={() => handleDemoClick(acc.role)}
-                  disabled={loading}
-                  className="p-3.5 rounded-2xl border border-slate-200 hover:border-teal-400 bg-slate-50/50 hover:bg-teal-50/40 text-left transition-all group flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 bg-teal-100 text-teal-800 rounded text-[10px] font-bold">
-                        {acc.role}
-                      </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-600 group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                    <div className="font-bold text-slate-900 text-xs mt-2">{acc.label}</div>
-                    <div className="text-[11px] text-slate-500">{acc.name}</div>
-                  </div>
-                  <div className="text-[10px] text-teal-700 font-semibold mt-2 pt-2 border-t border-slate-200/60">
-                    📍 {acc.loc}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 2: Standard Login */}
-        {activeTab === 'login' && (
-          <form onSubmit={handleCustomLogin} className="space-y-4 text-xs">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Email Address</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="asha@swasthyajal.gov.in"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Password</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl shadow-md transition-all text-xs"
-            >
-              {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
-            </button>
-          </form>
-        )}
-
-        {/* Tab 3: Register */}
-        {activeTab === 'register' && (
-          <form onSubmit={handleCustomRegister} className="space-y-4 text-xs">
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Full Name</label>
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          <div>
+            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Official Email</label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
-                type="text"
+                type="email"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Health Official Name"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="officer@swasthyajal.gov.in"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
               />
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@gov.in"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs"
-                />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Password</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs"
-                />
-              </div>
+          <div>
+            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Password</label>
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
+              />
             </div>
+          </div>
 
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Assign Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-teal-500 text-xs font-semibold"
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-lg shadow-rose-600/25 flex items-center justify-center gap-2 transition-all"
+          >
+            <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
+
+        {/* 1-Click Fast Demo Login Buttons */}
+        <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <span>Instant SIH Demo Roles</span>
+            <span className="text-amber-500">1-Click</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {QUICK_DEMO_USERS.map((u, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => handleQuickDemo(u.role)}
+                className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-750 text-left text-[11px] font-bold text-slate-700 dark:text-slate-300 transition-all truncate flex items-center gap-1.5"
               >
-                <option value="ASHA">ASHA / Community Health Worker</option>
-                <option value="ANM">ANM / Health Worker</option>
-                <option value="MEDICAL_STAFF">PHC/CHC Medical Staff</option>
-                <option value="AUTHORITY">District/State Health Authority</option>
-                <option value="ADMIN">System Administrator</option>
-                <option value="PUBLIC">Public Citizen</option>
-              </select>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">State</label>
-                <select
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  className="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs"
-                >
-                  <option value="Assam">Assam</option>
-                  <option value="Meghalaya">Meghalaya</option>
-                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                  <option value="Manipur">Manipur</option>
-                  <option value="Mizoram">Mizoram</option>
-                  <option value="Nagaland">Nagaland</option>
-                  <option value="Tripura">Tripura</option>
-                  <option value="Sikkim">Sikkim</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">District</label>
-                <input
-                  type="text"
-                  value={district}
-                  onChange={(e) => setDistrict(e.target.value)}
-                  className="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs"
-                />
-              </div>
-              <div>
-                <label className="block font-bold text-slate-700 mb-1">Village</label>
-                <input
-                  type="text"
-                  value={village}
-                  onChange={(e) => setVillage(e.target.value)}
-                  className="w-full px-2 py-2 rounded-xl border border-slate-200 text-xs"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl shadow-md transition-all text-xs"
-            >
-              Register & Sign In
-            </button>
-          </form>
-        )}
+                <UserCheck className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span className="truncate">{u.label.split('(')[0]}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
       </div>
-
     </div>
   );
 };
