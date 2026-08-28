@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
@@ -15,11 +15,14 @@ import {
   Cpu, 
   BookOpen,
   AlertTriangle,
-  Compass
+  LogOut,
+  LogIn,
+  UserPlus
 } from 'lucide-react';
 
 export const Sidebar = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { t } = useLanguage();
 
   const NAV_ITEMS = [
@@ -34,17 +37,23 @@ export const Sidebar = () => {
     { to: '/analytics', label: t('navAnalytics'), icon: BarChart3, roles: ['ALL'] },
     { to: '/model-monitoring', label: t('navModelMonitoring'), icon: Cpu, roles: ['DISTRICT_OFFICER', 'AUTHORITY', 'ADMIN'] },
     { to: '/safety-guide', label: t('navSafetyGuide'), icon: BookOpen, roles: ['ALL'] },
+    { to: '/login', label: 'Auth / Persona Sign In', icon: LogIn, roles: ['ALL'] },
   ];
 
   const currentRole = user?.role || 'PUBLIC';
   const visibleNav = NAV_ITEMS.filter(item => item.roles.includes('ALL') || item.roles.includes(currentRole));
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between p-4 shrink-0 transition-colors hidden md:flex min-h-[calc(100vh-4rem)]">
       <div className="space-y-6">
         
         {/* Active Role Indicator Card */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-1">
+        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-1.5">
           <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-400">
             <span>Active Persona</span>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
@@ -58,6 +67,16 @@ export const Sidebar = () => {
           <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
             {user?.district}, {user?.state}
           </div>
+
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="w-full mt-1 pt-1.5 border-t border-slate-200 dark:border-slate-700/60 text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 flex items-center justify-center gap-1 transition-colors"
+            >
+              <LogOut className="w-3 h-3" />
+              <span>Logout Persona</span>
+            </button>
+          )}
         </div>
 
         {/* Navigation Links */}

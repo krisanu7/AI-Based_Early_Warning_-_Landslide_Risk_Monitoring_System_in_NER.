@@ -20,6 +20,7 @@ import { LandslideSafetyGuidePage } from './pages/LandslideSafetyGuidePage';
 import { HistoricalAnalyticsPage } from './pages/HistoricalAnalyticsPage';
 import { AdminModelMonitoringPage } from './pages/AdminModelMonitoringPage';
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 
 function AppContent() {
   const [sihTourOpen, setSihTourOpen] = useState(false);
@@ -47,6 +48,7 @@ function AppContent() {
             <Route path="/analytics" element={<HistoricalAnalyticsPage />} />
             <Route path="/model-monitoring" element={<AdminModelMonitoringPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

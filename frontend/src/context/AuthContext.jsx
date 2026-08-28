@@ -117,8 +117,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (userData) => {
+    const res = await authApi.register(userData);
+    // User must manually log in after registration
+    return res.data;
+  };
+
   const logout = () => {
-    setUser(DEFAULT_DEMO_USER);
+    setUser(null);
+    setToken(null);
     localStorage.removeItem('ner_landslide_user');
     localStorage.removeItem('ner_landslide_token');
   };
@@ -128,6 +135,7 @@ export const AuthProvider = ({ children }) => {
       user,
       token,
       login,
+      register,
       logout,
       switchDemoRole,
       isOnline,

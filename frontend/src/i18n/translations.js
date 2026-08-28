@@ -6,7 +6,10 @@ export const translations = {
     projectSubtitle: "AI-Powered Early Warning & Landslide Risk Monitoring System for Northeast India",
     sihTour: "SIH 2026 Pitch Tour",
     demoRole: "Demo Role",
-    
+    signIn: "Sign In",
+    register: "Register Account",
+    logout: "Logout",
+
     // Navigation
     navDashboard: "Command Dashboard",
     navLiveMap: "Live GIS Map",
