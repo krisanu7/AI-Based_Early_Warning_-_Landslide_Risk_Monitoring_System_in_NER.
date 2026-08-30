@@ -21,7 +21,7 @@ export const LanguageProvider = ({ children }) => {
     return translations[language][key];
   };
 
-  const speak = (text) => {
+  const speak = (text, targetLang = null) => {
     if (!('speechSynthesis' in window)) {
       alert("Text-to-speech is not supported on this browser.");
       return;
@@ -36,7 +36,9 @@ export const LanguageProvider = ({ children }) => {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Voice codes for Indian regional accents
+    const activeLang = targetLang || language;
+    
+    // Target BCP-47 language codes for Indian regional speech engines
     const langMap = {
       en: 'en-IN',
       as: 'as-IN',
@@ -44,19 +46,27 @@ export const LanguageProvider = ({ children }) => {
       hi: 'hi-IN'
     };
     
-    utterance.lang = langMap[language] || 'en-IN';
-    utterance.rate = 0.95;
+    utterance.lang = langMap[activeLang] || 'en-IN';
+    utterance.rate = 0.90;
     utterance.pitch = 1.0;
 
-    const voices = window.speechSynthesis.getVoices();
-    const matchingVoice = voices.find(v => v.lang === utterance.lang || v.lang.startsWith(utterance.lang.split('-')[0]));
-    if (matchingVoice) {
-      utterance.voice = matchingVoice;
-    }
+    const findAndSetVoice = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const prefix = utterance.lang.split('-')[0];
+      const matchingVoice = voices.find(v => v.lang === utterance.lang || v.lang.startsWith(prefix));
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
+    };
+
+    findAndSetVoice();
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onerror = (e) => {
+      console.error('Speech Synthesis error', e);
+      setIsSpeaking(false);
+    };
 
     window.speechSynthesis.speak(utterance);
   };

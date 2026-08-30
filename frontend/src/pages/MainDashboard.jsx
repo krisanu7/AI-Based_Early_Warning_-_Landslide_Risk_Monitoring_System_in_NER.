@@ -76,10 +76,10 @@ export const MainDashboard = () => {
             <span>Northeast Regional Early Warning Grid</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white">
-            Landslide Susceptibility & Early Warning Command Center
+            {t('cmdCenterTitle')}
           </h1>
           <p className="text-slate-300 text-xs sm:text-sm max-w-2xl">
-            Live AI slope instability modeling, multi-temporal rainfall surge tracking, and automated disaster logistics across the 8 Northeastern states.
+            {t('cmdCenterSub')}
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export const MainDashboard = () => {
           className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-2xl border border-slate-700 shadow-md flex items-center gap-2 transition-all shrink-0"
         >
           <RefreshCw className={`w-4 h-4 text-amber-400 ${loading ? 'animate-spin' : ''}`} />
-          <span>Refresh Telemetry</span>
+          <span>{t('refreshTelemetry')}</span>
         </button>
       </div>
 
@@ -135,10 +135,10 @@ export const MainDashboard = () => {
               <Mountain className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               <div>
                 <h2 className="text-base font-black text-slate-900 dark:text-white">
-                  Live Northeast India Landslide Geospatial Grid
+                  {t('liveGridTitle')}
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Interactive slope nodes, rainfall radar, critical roads, and safe shelters.
+                  {t('liveGridSub')}
                 </p>
               </div>
             </div>
@@ -147,7 +147,7 @@ export const MainDashboard = () => {
               to="/map"
               className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1"
             >
-              <span>Full Screen</span>
+              <span>{t('fullScreen')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -171,7 +171,7 @@ export const MainDashboard = () => {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-2">
                 <BellRing className="w-4 h-4 text-amber-500" />
-                <span>Early Warning Feed</span>
+                <span>{t('earlyWarningFeed')}</span>
               </h3>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500/15 text-rose-600 border border-rose-500/30">
                 {summary?.recent_alerts?.length || 0} Alerts
@@ -196,12 +196,12 @@ export const MainDashboard = () => {
                   </p>
 
                   <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-700/60 text-[10px]">
-                    <span className="text-slate-400">Rain: <strong>{alert.rainfall_24h_mm} mm</strong></span>
+                    <span className="text-slate-400">{t('rainfall24h')}: <strong>{alert.rainfall_24h_mm} mm</strong></span>
                     <button
                       onClick={() => handleOpenVerify(alert)}
                       className="text-rose-600 dark:text-rose-400 font-bold hover:underline"
                     >
-                      Verify / Broadcast →
+                      {t('verifyIncident')} →
                     </button>
                   </div>
                 </div>
@@ -229,11 +229,11 @@ export const MainDashboard = () => {
 
               <div className="grid grid-cols-2 gap-2 text-[11px]">
                 <div className="bg-white/80 dark:bg-slate-800/80 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <span className="text-slate-400 text-[10px] block">24h Rain Surge:</span>
+                  <span className="text-slate-400 text-[10px] block">{t('rainfall24h')}:</span>
                   <strong className="text-blue-600 font-black">{selectedLocation.rainfall_24h || 0} mm</strong>
                 </div>
                 <div className="bg-white/80 dark:bg-slate-800/80 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <span className="text-slate-400 text-[10px] block">Slope Gradient:</span>
+                  <span className="text-slate-400 text-[10px] block">{t('slopeAngle')}:</span>
                   <strong className="text-slate-900 dark:text-white font-black">{selectedLocation.slope_degrees || 0}°</strong>
                 </div>
               </div>
