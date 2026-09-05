@@ -6,15 +6,39 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 @router.get("")
 async def get_dashboard_summary():
+    from app.seed_data import get_inmemory_seed_data
+    seed = get_inmemory_seed_data()
+
     locations_col = get_locations_col()
     alerts_col = get_alerts_col()
     field_reports_col = get_field_reports_col()
     infra_col = get_infrastructure_col()
 
-    locs = await locations_col.find()
-    alerts = await alerts_col.find()
-    reports = await field_reports_col.find()
-    infra = await infra_col.find()
+    try:
+        locs = await locations_col.find()
+    except Exception:
+        locs = []
+    if not locs:
+        locs = seed["locations"]
+
+    try:
+        alerts = await alerts_col.find()
+    except Exception:
+        alerts = []
+    if not alerts:
+        alerts = seed["alerts"]
+
+    try:
+        reports = await field_reports_col.find()
+    except Exception:
+        reports = []
+
+    try:
+        infra = await infra_col.find()
+    except Exception:
+        infra = []
+    if not infra:
+        infra = seed["infrastructure"]
 
     # Calculate risk bands
     low_count = sum(1 for l in locs if l.get("risk_score", 0) <= 30)

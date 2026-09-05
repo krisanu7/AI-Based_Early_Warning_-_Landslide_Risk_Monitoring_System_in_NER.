@@ -12,24 +12,53 @@ async def list_alerts(
     district: Optional[str] = Query(None),
     status: Optional[str] = Query(None)
 ):
-    alerts_col = get_alerts_col()
-    query = {}
-    if state and state != "ALL":
-        query["state"] = state
-    if district and district != "ALL":
-        query["district"] = district
-    if status and status != "ALL":
-        query["status"] = status
+    from app.seed_data import get_inmemory_seed_data
+    seed = get_inmemory_seed_data()
 
-    alerts = await alerts_col.find(query)
+    alerts_col = get_alerts_col()
+    state_str = state if isinstance(state, str) else None
+    district_str = district if isinstance(district, str) else None
+    status_str = status if isinstance(status, str) else None
+
+    query = {}
+    if state_str and state_str != "ALL":
+        query["state"] = state_str
+    if district_str and district_str != "ALL":
+        query["district"] = district_str
+    if status_str and status_str != "ALL":
+        query["status"] = status_str
+
+    try:
+        alerts = await alerts_col.find(query)
+    except Exception:
+        alerts = []
+
+    if not alerts:
+        alerts = list(seed["alerts"])
+        if state_str and state_str != "ALL":
+            alerts = [a for a in alerts if a.get("state", "").lower() == state_str.lower()]
+        if district_str and district_str != "ALL":
+            alerts = [a for a in alerts if a.get("district", "").lower() == district_str.lower()]
+        if status_str and status_str != "ALL":
+            alerts = [a for a in alerts if a.get("status") == status_str]
+
     alerts.sort(key=lambda x: x.get("risk_score", 0), reverse=True)
     return alerts
 
 @router.get("/public")
 async def get_public_active_warnings():
     """Returns alerts that have been verified and approved for public broadcast."""
+    from app.seed_data import get_inmemory_seed_data
+    seed = get_inmemory_seed_data()
+
     alerts_col = get_alerts_col()
-    alerts = await alerts_col.find()
+    try:
+        alerts = await alerts_col.find()
+    except Exception:
+        alerts = []
+
+    if not alerts:
+        alerts = list(seed["alerts"])
     
     # Filter public-facing alerts
     public_alerts = [

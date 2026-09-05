@@ -910,5 +910,87 @@ async def seed_database():
     print("Seeding completed successfully!")
     close_db()
 
+_cached_seed_payload = None
+
+def get_inmemory_seed_data():
+    global _cached_seed_payload
+    if _cached_seed_payload is not None:
+        return _cached_seed_payload
+
+    locations = []
+    alerts = []
+    for i, item in enumerate(NORTHEAST_SLOPE_LOCATIONS):
+        pred = landslide_ml_engine.predict_landslide(
+            rainfall_1h=item["rainfall_1h"],
+            rainfall_6h=item["rainfall_6h"],
+            rainfall_24h=item["rainfall_24h"],
+            rainfall_48h=item["rainfall_48h"],
+            rainfall_72h=item["rainfall_72h"],
+            slope_degrees=item["slope_degrees"],
+            elevation_m=item["elevation_m"],
+            soil_moisture_pct=item["soil_moisture_pct"],
+            pore_water_pressure_kpa=item["pore_water_pressure_kpa"],
+            distance_to_road_m=item["distance_to_road_m"],
+            distance_to_river_m=item["distance_to_river_m"],
+            historical_landslides_count=item["historical_landslides_count"],
+            vegetation_ndvi=item["vegetation_ndvi"]
+        )
+        loc_doc = dict(item)
+        loc_doc["id"] = f"LOC-NER-{i+1:03d}"
+        loc_doc["risk_score"] = pred["risk_score"]
+        loc_doc["risk_level"] = pred["risk_level"]
+        loc_doc["model_confidence"] = pred["model_confidence"]
+        loc_doc["is_rainfall_triggered"] = pred["is_rainfall_triggered"]
+        loc_doc["active_triggers"] = pred["active_triggers"]
+        loc_doc["xai_feature_attributions"] = pred["xai_feature_attributions"]
+        loc_doc["last_updated"] = datetime.utcnow().isoformat()
+        locations.append(loc_doc)
+
+        if pred["risk_score"] >= 61:
+            status = "CRITICAL" if pred["risk_score"] >= 81 else "WARNING"
+            is_public = pred["risk_score"] >= 75
+            alerts.append({
+                "id": f"ALT-NER-{len(alerts)+1:03d}",
+                "title": f"Landslide {status}: {item['village']} Slope Instability",
+                "state": item["state"],
+                "district": item["district"],
+                "village": item["village"],
+                "risk_score": pred["risk_score"],
+                "risk_level": pred["risk_level"],
+                "status": status,
+                "is_rainfall_triggered": pred["is_rainfall_triggered"],
+                "rainfall_24h_mm": item["rainfall_24h"],
+                "slope_degrees": item["slope_degrees"],
+                "population_exposed": item["population"],
+                "contributing_factors": pred["active_triggers"],
+                "public_warning_issued": is_public,
+                "public_warning_headline": f"🚨 URGENT LANDSLIDE ADVISORY: {item['village']}, {item['district']}",
+                "public_warning_message": f"Continuous heavy rainfall ({item['rainfall_24h']:.1f} mm/24h) and unstable slope angle ({item['slope_degrees']:.1f}°) detected. Authorities advise avoiding road travel along {item.get('associated_highway', 'local hill roads')}.",
+                "evacuation_recommended": pred["risk_score"] >= 85,
+                "road_closure_ordered": pred["risk_score"] >= 80,
+                "verified_by": "Dr. Subhashish Deb (District Disaster Officer)" if is_public else None,
+                "created_at": (datetime.utcnow() - timedelta(hours=i*2)).isoformat()
+            })
+
+    infra = []
+    for i, inf in enumerate(DEMO_INFRASTRUCTURE):
+        d = dict(inf)
+        d["id"] = f"INF-NER-{i+1:03d}"
+        infra.append(d)
+
+    shelters = []
+    for i, sh in enumerate(DEMO_EVACUATION_CENTERS):
+        s = dict(sh)
+        s["id"] = f"SHELTER-NER-{i+1:03d}"
+        shelters.append(s)
+
+    _cached_seed_payload = {
+        "locations": locations,
+        "alerts": alerts,
+        "infrastructure": infra,
+        "evacuation_centers": shelters
+    }
+    return _cached_seed_payload
+
 if __name__ == "__main__":
     asyncio.run(seed_database())

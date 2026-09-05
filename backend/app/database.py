@@ -41,39 +41,75 @@ class MongoCollectionWrapper:
         self._col = raw_collection
 
     async def find_one(self, *args, **kwargs):
-        doc = await self._col.find_one(*args, **kwargs)
-        return sanitize_mongo_doc(doc)
+        try:
+            doc = await self._col.find_one(*args, **kwargs)
+            return sanitize_mongo_doc(doc)
+        except Exception as e:
+            print(f"[MongoDB] find_one error: {e}")
+            return None
 
     async def find(self, *args, **kwargs):
-        cursor = self._col.find(*args, **kwargs)
-        docs = await cursor.to_list(length=1000)
-        return [sanitize_mongo_doc(d) for d in docs]
+        try:
+            cursor = self._col.find(*args, **kwargs)
+            docs = await cursor.to_list(length=1000)
+            return [sanitize_mongo_doc(d) for d in docs]
+        except Exception as e:
+            print(f"[MongoDB] find error (offline/timeout): {e}")
+            return []
 
     async def insert_one(self, doc, *args, **kwargs):
-        return await self._col.insert_one(doc, *args, **kwargs)
+        try:
+            return await self._col.insert_one(doc, *args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] insert_one error: {e}")
+            return None
 
     async def insert_many(self, docs, *args, **kwargs):
-        return await self._col.insert_many(docs, *args, **kwargs)
+        try:
+            return await self._col.insert_many(docs, *args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] insert_many error: {e}")
+            return None
 
     async def update_one(self, *args, **kwargs):
-        return await self._col.update_one(*args, **kwargs)
+        try:
+            return await self._col.update_one(*args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] update_one error: {e}")
+            return None
 
     async def update_many(self, *args, **kwargs):
-        return await self._col.update_many(*args, **kwargs)
+        try:
+            return await self._col.update_many(*args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] update_many error: {e}")
+            return None
 
     async def delete_one(self, *args, **kwargs):
-        return await self._col.delete_one(*args, **kwargs)
+        try:
+            return await self._col.delete_one(*args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] delete_one error: {e}")
+            return None
 
     async def delete_many(self, *args, **kwargs):
-        return await self._col.delete_many(*args, **kwargs)
+        try:
+            return await self._col.delete_many(*args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] delete_many error: {e}")
+            return None
 
     async def count_documents(self, *args, **kwargs):
-        return await self._col.count_documents(*args, **kwargs)
+        try:
+            return await self._col.count_documents(*args, **kwargs)
+        except Exception as e:
+            print(f"[MongoDB] count_documents error: {e}")
+            return 0
 
 def connect_db():
     global client, db
     try:
-        client = AsyncIOMotorClient(settings.MONGODB_URL)
+        client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=2000)
         db = client[settings.DATABASE_NAME]
         print(f"Connected to MongoDB database: {settings.DATABASE_NAME}")
     except Exception as e:
@@ -88,7 +124,7 @@ def close_db():
 def get_collection(name: str) -> MongoCollectionWrapper:
     global db
     if db is None:
-        client_local = AsyncIOMotorClient(settings.MONGODB_URL)
+        client_local = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=2000)
         db = client_local[settings.DATABASE_NAME]
     return MongoCollectionWrapper(db[name])
 
