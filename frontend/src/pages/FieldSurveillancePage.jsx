@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { fieldReportsApi } from '../api/client';
 import { 
@@ -14,7 +15,9 @@ import {
   Mountain,
   Route,
   Home,
-  Users
+  Users,
+  Sparkles,
+  Eye
 } from 'lucide-react';
 
 export const FieldSurveillancePage = () => {
@@ -175,6 +178,30 @@ export const FieldSurveillancePage = () => {
           <span>{syncStatus}</span>
         </div>
       )}
+
+      {/* Gemini 3.1 Flash Lite Visual Inspector Callout */}
+      <div className="p-4 rounded-3xl bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 border border-indigo-700/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 text-amber-300 flex items-center justify-center shrink-0">
+            <Sparkles className="w-5 h-5 animate-spin" />
+          </div>
+          <div>
+            <div className="font-black text-xs sm:text-sm text-white flex items-center gap-2">
+              <span>Have Road or Field Photos? Let Gemini 3.1 Flash Lite Analyze Automatically</span>
+            </div>
+            <p className="text-[11px] text-indigo-200">
+              Drag & drop any terrain image to detect landslides, evaluate chance/accuracy, and auto-dispatch alerts to Public, DDMA & Field Teams.
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/visual-inspector"
+          className="px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-rose-600/20 shrink-0 transition-all hover:scale-105"
+        >
+          <Eye className="w-3.5 h-3.5" />
+          <span>Launch AI Visual Inspector</span>
+        </Link>
+      </div>
 
       {/* Main Grid: Form + Recent Local Submissions */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

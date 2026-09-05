@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import connect_db, close_db
-from app.routers import auth, dashboard, map, field_reports, alerts, infrastructure, evacuation, analytics, sync, prediction, health
+from app.database_pg import init_postgis_db, close_postgis_db
+from app.routers import auth, dashboard, map, field_reports, alerts, infrastructure, evacuation, analytics, sync, prediction, health, gis_postgis, rag_advisor, visual_inspector
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,17 +24,20 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    connect_db()
-    print("NER Landslide AI Backend Started Successfully.")
+    connect_db() # MongoDB initialization
+    await init_postgis_db() # PostgreSQL + PostGIS initialization
+    print("NER Landslide AI Backend & PostGIS Mapping Started Successfully.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
     close_db()
+    await close_postgis_db()
 
 # Mount API Routers
 app.include_router(auth.router, prefix=settings.API_PREFIX)
 app.include_router(dashboard.router, prefix=settings.API_PREFIX)
 app.include_router(map.router, prefix=settings.API_PREFIX)
+app.include_router(gis_postgis.router, prefix=settings.API_PREFIX)
 app.include_router(field_reports.router, prefix=settings.API_PREFIX)
 app.include_router(alerts.router, prefix=settings.API_PREFIX)
 app.include_router(infrastructure.router, prefix=settings.API_PREFIX)
@@ -42,6 +46,10 @@ app.include_router(analytics.router, prefix=settings.API_PREFIX)
 app.include_router(sync.router, prefix=settings.API_PREFIX)
 app.include_router(prediction.router, prefix=settings.API_PREFIX)
 app.include_router(health.router, prefix=settings.API_PREFIX)
+app.include_router(rag_advisor.router, prefix=settings.API_PREFIX)
+app.include_router(visual_inspector.router, prefix=settings.API_PREFIX)
+
+
 
 @app.get("/")
 def root():

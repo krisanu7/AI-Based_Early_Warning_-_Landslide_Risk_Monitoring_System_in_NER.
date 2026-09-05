@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 from datetime import datetime
+
 
 # --- Auth Schemas ---
 class Token(BaseModel):
@@ -57,29 +58,30 @@ class FieldReportResponse(FieldReportCreate):
 
 # --- Prediction Schemas ---
 class LandslidePredictRequest(BaseModel):
-    rainfall_1h: float = 12.0
-    rainfall_6h: float = 35.0
-    rainfall_24h: float = 120.0
-    rainfall_48h: float = 185.0
-    rainfall_72h: float = 210.0
-    slope_degrees: float = 38.0
-    elevation_m: float = 950.0
-    soil_moisture_pct: float = 78.0
-    pore_water_pressure_kpa: float = 24.0
-    distance_to_road_m: float = 80.0
-    distance_to_river_m: float = 250.0
-    historical_landslides_count: int = 4
-    vegetation_ndvi: float = 0.45
+    Rainfall_mm: Union[float, List[float], int] = Field(default=180.0, description="Rainfall in mm")
+    Slope_Angle: Union[float, List[float], int] = Field(default=30.0, description="Slope inclination angle in degrees")
+    Soil_Saturation: Union[float, List[float], int] = Field(default=0.90, description="Soil saturation (0.0-1.0 or 0-100%)")
+    Vegetation_Cover: Union[float, List[float], int] = Field(default=0.15, description="Vegetation cover index (0.0 to 1.0)")
+    Earthquake_Activity: Union[float, List[float], int] = Field(default=4.5, description="Seismic earthquake activity level")
+    Proximity_to_Water: Union[float, List[float], int] = Field(default=1.0, description="Proximity to nearest water source in meters")
+    Soil_Type_Gravel: Union[int, List[int], float] = Field(default=0, description="Soil type gravel (0 or 1)")
+    Soil_Type_Sand: Union[int, List[int], float] = Field(default=0, description="Soil type sand (0 or 1)")
+    Soil_Type_Silt: Union[int, List[int], float] = Field(default=1, description="Soil type silt (0 or 1)")
+    Soil_Type: Optional[str] = Field(default="Silt", description="Soil type text name")
+
 
 class LandslidePredictResponse(BaseModel):
     risk_score: int
     risk_level: str
+    risk_level_code: Optional[str] = "MODERATE"
     model_confidence: float
     is_rainfall_triggered: bool
     active_triggers: List[str]
     xai_feature_attributions: List[Dict[str, Any]]
     model_version: str
+    input_parameters: Optional[Dict[str, Any]] = None
     disclaimer: str
+
 
 # --- Alert & Warning Schemas ---
 class AlertVerifyRequest(BaseModel):

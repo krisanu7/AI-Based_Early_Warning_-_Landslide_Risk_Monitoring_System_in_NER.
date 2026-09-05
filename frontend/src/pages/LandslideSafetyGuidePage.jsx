@@ -2,16 +2,12 @@ import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { 
   BookOpen, 
-  ShieldCheck, 
   AlertTriangle, 
   CheckCircle2, 
-  XCircle, 
-  Phone, 
-  Mountain, 
-  CloudRain,
-  Home,
-  Navigation
+  Phone
 } from 'lucide-react';
+
+import { RAGDisasterAssistant } from '../components/rag/RAGDisasterAssistant';
 
 export const LandslideSafetyGuidePage = () => {
   const { t } = useLanguage();
@@ -35,16 +31,20 @@ export const LandslideSafetyGuidePage = () => {
         <div className="max-w-3xl space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>Official Community Disaster Preparedness Protocol</span>
+            <span>{t('guideOfficialBadge')}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white">
-            Landslide Safety & Community Preparedness Guide
+            {t('guideMainTitle')}
           </h1>
           <p className="text-emerald-100/90 text-xs sm:text-sm">
-            Government of India & NDMA approved action plans for families and communities living near steep hill slopes in Northeast India.
+            {t('guideMainSub')}
           </p>
         </div>
       </div>
+
+      {/* RAG AI Disaster Assistant Component */}
+      <RAGDisasterAssistant />
+
 
       {/* 4 Stage Safety Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -59,26 +59,26 @@ export const LandslideSafetyGuidePage = () => {
               <h2 className="text-base font-black text-slate-900 dark:text-white">
                 {t('beforeLandslide')}
               </h2>
-              <p className="text-xs text-slate-500">Pre-monsoon preparedness & family planning</p>
+              <p className="text-xs text-slate-500">{t('beforeLandslideSub')}</p>
             </div>
           </div>
 
           <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Know your local evacuation routes and identify nearby designated safe shelters.</span>
+              <span>{t('beforeLandslideP1')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Monitor official weather advisories and rainfall radar alerts during monsoon months.</span>
+              <span>{t('beforeLandslideP2')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Keep an emergency grab-bag ready with essential medicines, torch, battery radio, and documents.</span>
+              <span>{t('beforeLandslideP3')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Avoid building houses directly beneath steep, unreinforced highway cut-slopes or cliff edges.</span>
+              <span>{t('beforeLandslideP4')}</span>
             </div>
           </div>
         </div>
@@ -93,26 +93,26 @@ export const LandslideSafetyGuidePage = () => {
               <h2 className="text-base font-black text-slate-900 dark:text-white">
                 {t('duringRainfall')}
               </h2>
-              <p className="text-xs text-slate-500">Continuous rainfall & high-saturation window</p>
+              <p className="text-xs text-slate-500">{t('duringRainfallSub')}</p>
             </div>
           </div>
 
           <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <span>Listen to public early-warning bulletins and check for soil movement near retaining walls.</span>
+              <span>{t('duringRainfallP1')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <span>Stay alert for unusual sounds like cracking trees, rolling boulders, or sudden water muddying.</span>
+              <span>{t('duringRainfallP2')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <span>Avoid non-essential travel along vulnerable National Highway hill corridors (NH-27, NH-6, NH-10).</span>
+              <span>{t('duringRainfallP3')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-              <span>Be prepared to evacuate immediately if local disaster authorities issue an alert.</span>
+              <span>{t('duringRainfallP4')}</span>
             </div>
           </div>
         </div>
@@ -127,26 +127,26 @@ export const LandslideSafetyGuidePage = () => {
               <h2 className="text-base font-black text-slate-900 dark:text-white">
                 {t('duringLandslide')}
               </h2>
-              <p className="text-xs text-slate-500">Immediate life-safety actions</p>
+              <p className="text-xs text-slate-500">{t('duringLandslideSub')}</p>
             </div>
           </div>
 
           <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-              <span><strong>Move quickly away</strong> from the path of the landslide or mudflow to stable high ground.</span>
+              <span>{t('duringLandslideP1')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-              <span>If escape is not possible, curl into a tight ball and protect your head with arms under sturdy furniture.</span>
+              <span>{t('duringLandslideP2')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-              <span>Do NOT attempt to drive through mud debris or waterlogged hill roads.</span>
+              <span>{t('duringLandslideP3')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-              <span>Stay away from damaged electrical poles and loose transmission wires.</span>
+              <span>{t('duringLandslideP4')}</span>
             </div>
           </div>
         </div>
@@ -161,26 +161,26 @@ export const LandslideSafetyGuidePage = () => {
               <h2 className="text-base font-black text-slate-900 dark:text-white">
                 {t('afterLandslide')}
               </h2>
-              <p className="text-xs text-slate-500">Post-event recovery & secondary hazard avoidance</p>
+              <p className="text-xs text-slate-500">{t('afterLandslideSub')}</p>
             </div>
           </div>
 
           <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Stay away from the slide area. Secondary landslides often occur hours after the first failure.</span>
+              <span>{t('afterLandslideP1')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Check for trapped or injured neighbors without directly entering the active slide zone.</span>
+              <span>{t('afterLandslideP2')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Report broken utility lines and road blockages immediately to emergency authorities (Dial 112).</span>
+              <span>{t('afterLandslideP3')}</span>
             </div>
             <div className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Do not return to damaged homes until local engineers officially declare the structure safe.</span>
+              <span>{t('afterLandslideP4')}</span>
             </div>
           </div>
         </div>
@@ -193,10 +193,10 @@ export const LandslideSafetyGuidePage = () => {
           <div className="space-y-1">
             <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
               <Phone className="w-5 h-5 text-rose-600" />
-              <span>24x7 Northeast Disaster Emergency Directory</span>
+              <span>{t('emergencyDirectoryTitle')}</span>
             </h2>
             <p className="text-xs text-slate-500">
-              Verified official disaster response hotlines across India and the 8 Northeast states.
+              {t('emergencyDirectorySub')}
             </p>
           </div>
         </div>

@@ -107,7 +107,8 @@ export const SIHPitchTourModal = ({ isOpen, onClose }) => {
         <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-800 dark:text-slate-200">
           
           {/* Step Progress Indicators */}
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+
             {PILLARS.map((p, idx) => (
               <button
                 key={idx}

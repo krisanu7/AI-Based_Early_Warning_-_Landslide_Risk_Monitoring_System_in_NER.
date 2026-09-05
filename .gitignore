@@ -65,3 +65,25 @@ lerna-debug.log*
 *~
 .DS_Store
 Thumbs.db
+
+# Presentations and Office docs
+*.pptx
+*.ppt
+~$*
+
+# Scratch diagrams and presentation generators (keep root clean)
+/*.png
+/*.html
+/*.drawio
+build_presentation.py
+render_*.py
+generate_*.py
+refine_crop.py
+check_urls.py
+find_*.py
+inspect_*.py
+verify_*.py
+.agents/
+assets/
+mobile_app/
+research_and_dataset_links.txt

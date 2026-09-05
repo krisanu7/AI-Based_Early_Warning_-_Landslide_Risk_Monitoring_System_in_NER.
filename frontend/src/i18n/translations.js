@@ -21,7 +21,7 @@ export const translations = {
     navPublicWarnings: "Public Advisories",
     navAnalytics: "Historical Trends",
     navModelMonitoring: "AI Model & Health",
-    navSafetyGuide: "Safety & Preparedness",
+    navSafetyGuide: "RAG AI Safety & SOPs",
 
     // Command Dashboard & Banners
     cmdCenterTitle: "Landslide Susceptibility & Early Warning Command Center",
@@ -37,6 +37,7 @@ export const translations = {
     controlRoom: "Emergency Control Room",
     fullScreen: "Full Screen",
     viewAdvisory: "View Advisory",
+    location: "Location",
     
     // Risk Levels & Labels
     riskLow: "LOW RISK",
@@ -90,6 +91,37 @@ export const translations = {
     duringLandslide: "During a Landslide (Immediate Action)",
     afterLandslide: "After a Landslide (Recovery & Safety)",
     emergencyHelplines: "24x7 Emergency Contacts",
+
+    guideOfficialBadge: "Official Community Disaster Preparedness Protocol",
+    guideMainTitle: "Landslide Safety & Community Preparedness Guide",
+    guideMainSub: "Government of India & NDMA approved action plans for families and communities living near steep hill slopes in Northeast India.",
+
+    beforeLandslideSub: "Pre-monsoon preparedness & family planning",
+    beforeLandslideP1: "Know your local evacuation routes and identify nearby designated safe shelters.",
+    beforeLandslideP2: "Monitor official weather advisories and rainfall radar alerts during monsoon months.",
+    beforeLandslideP3: "Keep an emergency grab-bag ready with essential medicines, torch, battery radio, and documents.",
+    beforeLandslideP4: "Avoid building houses directly beneath steep, unreinforced highway cut-slopes or cliff edges.",
+
+    duringRainfallSub: "Continuous rainfall & high-saturation window",
+    duringRainfallP1: "Listen to public early-warning bulletins and check for soil movement near retaining walls.",
+    duringRainfallP2: "Stay alert for unusual sounds like cracking trees, rolling boulders, or sudden water muddying.",
+    duringRainfallP3: "Avoid non-essential travel along vulnerable National Highway hill corridors (NH-27, NH-6, NH-10).",
+    duringRainfallP4: "Be prepared to evacuate immediately if local disaster authorities issue an alert.",
+
+    duringLandslideSub: "Immediate life-safety actions",
+    duringLandslideP1: "Move quickly away from the path of the landslide or mudflow to stable high ground.",
+    duringLandslideP2: "If escape is not possible, curl into a tight ball and protect your head with arms under sturdy furniture.",
+    duringLandslideP3: "Do NOT attempt to drive through mud debris or waterlogged hill roads.",
+    duringLandslideP4: "Stay away from damaged electrical poles and loose transmission wires.",
+
+    afterLandslideSub: "Post-event recovery & secondary hazard avoidance",
+    afterLandslideP1: "Stay away from the slide area. Secondary landslides often occur hours after the first failure.",
+    afterLandslideP2: "Check for trapped or injured neighbors without directly entering the active slide zone.",
+    afterLandslideP3: "Report broken utility lines and road blockages immediately to emergency authorities (Dial 112).",
+    afterLandslideP4: "Do not return to damaged homes until local engineers officially declare the structure safe.",
+
+    emergencyDirectoryTitle: "24x7 Northeast Disaster Emergency Directory",
+    emergencyDirectorySub: "Verified official disaster response hotlines across India and the 8 Northeast states.",
     
     // Disclaimer
     disclaimerText: "AI detects and predicts landslide risk signals; authorized disaster management authorities make response decisions."
@@ -133,6 +165,7 @@ export const translations = {
     controlRoom: "জৰুৰীকালীন নিয়ন্ত্ৰণ কক্ষ",
     fullScreen: "সম্পূৰ্ণ পৰ্দা",
     viewAdvisory: "নিৰ্দেশনা চাওক",
+    location: "স্থান",
 
     // Risk Levels
     riskLow: "কম বিপদাশংকা (LOW)",
@@ -187,6 +220,37 @@ export const translations = {
     afterLandslide: "ভূমিস্খলনৰ পিছৰ নিৰাপত্তা",
     emergencyHelplines: "২৪x৭ জৰুৰীকালীন যোগাযোগ নম্বৰ",
 
+    guideOfficialBadge: "আনুষ্ঠানিক সামাজিক দুৰ্যোগ প্ৰস্তুতি প্ৰট'কল",
+    guideMainTitle: "ভূমিস্খলন নিৰাপত্তা আৰু সম্প্ৰদায় প্ৰস্তুতি নিৰ্দেশিকা",
+    guideMainSub: "উত্তৰ-পূব ভাৰতৰ পাহাৰীয়া ঢালত বসবাস কৰা পৰিয়াল আৰু সম্প্ৰদায়ৰ বাবে ভাৰত চৰকাৰ আৰু এনডিএমএ অনুমোদিত কৰ্মপৰিকল্পনা।",
+
+    beforeLandslideSub: "বৰ্ষাপূৰ্ব প্ৰস্তুতি আৰু পৰিয়ালৰ পৰিকল্পনা",
+    beforeLandslideP1: "আপোনাৰ স্থানীয় খালী কৰাৰ পথ আৰু নিকটৱৰ্তী সুৰক্ষিত আশ্ৰয় শিবিৰসমূহ চিনি ৰাখক।",
+    beforeLandslideP2: "বৰষুণৰ দিনবোৰত চৰকাৰী বতাহ-বৰষুণৰ পূৰ্বানুমান আৰু ৰাডাৰ সতৰ্কবাৰ্তা নিৰীক্ষণ কৰক।",
+    beforeLandslideP3: "প্ৰয়োজনীয় ঔষধ, টৰ্চ, বেটাৰী ৰেডিঅ' আৰু গুৰুত্বপূৰ্ণ নথিপত্ৰ থকা এটা জৰুৰীকালীন বেগ সাজু ৰাখক।",
+    beforeLandslideP4: "খাড়া পাহাৰীয়া ৰাস্তাৰ তলত বা পাহাড়ৰ গাত ঘৰ-বাৰী নিৰ্মাণ কৰাৰ পৰা বিৰত থাকক।",
+
+    duringRainfallSub: "অবিৰাম বৰষুণ আৰু মাটিৰ আদ্ৰতা সময়সীমা",
+    duringRainfallP1: "ৰাজহুৱা প্ৰাৰম্ভিক সতৰ্কবাৰ্তা বুলেটিন শুনক আৰু নদী বা পাহাৰৰ গাত মাটিৰ লৰচৰ পৰীক্ষা কৰক।",
+    duringRainfallP2: "গছ ভঙাৰ শব্দ, শিল বাগৰাৰ শব্দ বা পাহাৰীয়া পানী হঠাৎ ঘোলা হোৱা লক্ষণত সতৰ্ক থাকক।",
+    duringRainfallP3: "বিপজ্জনক ৰাষ্ট্ৰীয় ঘাইপথ (NH-27, NH-6, NH-10)ত অপ্ৰয়োজনীয় যাতায়াতৰ পৰা বিৰত থাকক।",
+    duringRainfallP4: "জিলা দুৰ্যোগ কৰ্তৃপক্ষই জাননী দিলে তৎক্ষণাৎ স্থানান্তৰ হ'বলৈ প্ৰস্তুত থাকক।",
+
+    duringLandslideSub: "জীৱন ৰক্ষাৰ বাবে তৎক্ষণাৎ জৰুৰী পদক্ষেপ",
+    duringLandslideP1: "ভূমিস্খলন বা বোকাৰ সোঁতৰ পথৰ পৰা ক্ষিপ্ৰতাৰে আঁতৰি উচ্চ আৰু সুৰক্ষিত স্থানত আশ্ৰয় লওক।",
+    duringLandslideP2: "যদি পলাই যোৱা সম্ভৱ নহয়, তেন্তে টান আচবাবৰ তলতমূৰ সুৰক্ষিত কৰি গোলাকাৰ হৈ শুই থাকক।",
+    duringLandslideP3: "বোকা আৰু ধ্বংসাৱশেষৰ মাজেৰে বাহন চলোৱাৰ চেষ্টা নকৰিব।",
+    duringLandslideP4: "ক্ষতিগ্ৰস্ত বিদ্যুৎ খুঁটি আৰু ছিঙি পৰা তাঁৰৰ পৰা সুৰক্ষিত দূৰত্বত থাকক।",
+
+    afterLandslideSub: "ভূমিস্খলন পৰৱৰ্তী উদ্ধাৰ আৰু দ্বিতীয় সংকটৰ সাৱধানতা",
+    afterLandslideP1: "ভূমিস্খলন হোৱা স্থানৰ পৰা আঁতৰত থাকক। প্ৰথম খহনীয়াৰ পিছতো পুনৰ ভূমিস্খলন হ'ব পাৰে।",
+    afterLandslideP2: "সক্ৰিয় খহনীয়া অঞ্চলত প্ৰৱেশ নকৰাকৈ আঁতৰৰ পৰা আহত চুবুৰীয়াৰ খবৰ লওক।",
+    afterLandslideP3: "ৰাস্তা বন্ধ হোৱা বা বিদ্যুৎ লাইন ক্ষতিগ্ৰস্ত হ'লে জৰুৰীকালীন সেৱা (১১২)ত খবৰ দিয়ক।",
+    afterLandslideP4: "অভিযন্তাই গৃহ সুৰক্ষিত বুলি ঘোষণা নকৰালৈকে ক্ষতিগ্ৰস্ত ঘৰলৈ উভতি নাযাব।",
+
+    emergencyDirectoryTitle: "২৪x৭ উত্তৰ-পূব দুৰ্যোগ জৰুৰীকালীন যোগাযোগ সঞ্চয়িকা",
+    emergencyDirectorySub: "ভাৰত আৰু উত্তৰ-পূবৰ ৮ খন ৰাজ্যৰ বাবে সত্যাপিত চৰকাৰী জৰুৰীকালীন হটলাইন।",
+
     // Disclaimer
     disclaimerText: "এআই-এ ভূমিস্খলনৰ সম্ভাৱ্য সংকেত চিনাক্ত কৰে; প্ৰাধিকৃত দুৰ্যোগ ব্যৱস্থাপনা কৰ্তৃপক্ষই সিদ্ধান্ত গ্ৰহণ কৰে।"
   },
@@ -229,6 +293,7 @@ export const translations = {
     controlRoom: "জরুরি নিয়ন্ত্রণ কক্ষ",
     fullScreen: "ফুল স্ক্রিন",
     viewAdvisory: "নির্দেশিকা দেখুন",
+    location: "অবস্থান",
 
     // Risk Levels
     riskLow: "কম ঝুঁকি (LOW)",
@@ -283,6 +348,37 @@ export const translations = {
     afterLandslide: "ভূমিধস পরবর্তী নিরাপত্তা",
     emergencyHelplines: "২৪x৭ জরুরি হেল্পলাইন নম্বর",
 
+    guideOfficialBadge: "অফিসিয়াল সামাজিক দুর্যোগ প্রস্তুতি প্রোটোকল",
+    guideMainTitle: "ভূমিধস নিরাপত্তা ও কমিউনিটি প্রস্তুতি নির্দেশিকা",
+    guideMainSub: "উত্তর-পূর্ব ভারতের পাহাড়ি ঢালে বসবাসকারী পরিবার ও সম্প্রদায়ের জন্য ভারত সরকার ও এনডিএমএ অনুমোদিত কর্মপরিকল্পনা।",
+
+    beforeLandslideSub: "বর্ষাপূর্ব প্রস্তুতি ও পারিবারিক পরিকল্পনা",
+    beforeLandslideP1: "আপনার স্থানীয় মানচিত্রে জরুরি যোগাযোগের পথ এবং নিকটবর্তী নিরাপদ আশ্রয় কেন্দ্রগুলি চিনে রাখুন।",
+    beforeLandslideP2: "বর্ষার দিনগুলিতে সরকারি আবহাওয়া পূর্বাভাস এবং বৃষ্টিপাত রাডার অ্যালার্ট নিয়মিত পর্যবেক্ষণ করুন।",
+    beforeLandslideP3: "প্রয়োজনীয় ওষুধ, টর্চ, ব্যাটারি রেডিও এবং গুরুত্বপূর্ণ কাগজপত্রসহ একটি জরুরি ব্যাগ তৈরি রাখুন।",
+    beforeLandslideP4: "উঁচু ও খাড়া পাহাড়ি রাস্তার ঢাল বা পাহাড়ের খাদের ঠিক নিচে ঘরবাড়ি নির্মাণ থেকে বিরত থাকুন।",
+
+    duringRainfallSub: "অবিরাম বৃষ্টিপাত ও মাটি স্যাচুরেশন সময়সীমা",
+    duringRainfallP1: "সরকারি প্রারম্ভিক সতর্কবার্তা বুলেটিন শুনুন এবং সীমানা প্রাচীর ও মাটির অস্বাভাবিক নড়াচড়া পরীক্ষা করুন।",
+    duringRainfallP2: "গাছ ভাঙার শব্দ, গড়ানো পাথরের শব্দ বা পাহাড়ি নদীর পানি হঠাৎ কাদাগোলা হওয়ার মতো অস্বাভাবিক লক্ষণ খেয়াল করুন।",
+    duringRainfallP3: "ঝুঁকিপূর্ণ জাতীয় মহাসড়ক (NH-27, NH-6, NH-10) ধরে অপ্রয়োজনীয় পাহাড়ি ভ্রমণ বন্ধ রাখুন।",
+    duringRainfallP4: "স্থানীয় দুর্যোগ ব্যবস্থাপনা কর্তৃপক্ষ নির্দেশ প্রদান করলে অবিলম্বে নিরাপদ স্থানে সরে যেতে প্রস্তুত থাকুন।",
+
+    duringLandslideSub: "জীবন রক্ষার্থে তাৎক্ষণিক জরুরি পদক্ষেপ",
+    duringLandslideP1: "ভূমিধস বা কাদার স্রোতের পথ থেকে দ্রুত সরে গিয়ে উচ্চ ও শক্ত মাটিতে আশ্রয় নিন।",
+    duringLandslideP2: "যদি বেরিয়ে যাওয়া অসম্ভব হয়, তবে শক্ত আসবাবের নিচে মাথা হাত দিয়ে ঢেকে কোঁকড়ানো হয়ে অবস্থান নিন।",
+    duringLandslideP3: "কাদামাটি ও ধ্বংসাবশেষে ভরা বা প্লাবিত পাহাড়ি রাস্তা দিয়ে গাড়ি চালানোর চেষ্টা করবেন না।",
+    duringLandslideP4: "ক্ষতিগ্রস্ত বৈদ্যুতিক খুঁটি এবং ছিঁড়ে পড়া বিদ্যুতের তার থেকে নিরাপদ দূরত্বে থাকুন।",
+
+    afterLandslideSub: "ভূমিধস পরবর্তী উদ্ধার ও দ্বিতীয় ঝুঁকির সতর্কতা",
+    afterLandslideP1: "ধসে যাওয়া স্থান থেকে দূরে থাকুন। প্রথম ধসের কয়েক ঘণ্টা পরেও পুনরায় দ্বিতীয় ভূমিধস হতে পারে।",
+    afterLandslideP2: "সক্রিয় ধস অঞ্চলে নিজে না ঢুকে দূর থেকে আটকে পড়া বা আহত প্রতিবেশীদের খোঁজ নিন।",
+    afterLandslideP3: "রাস্তা বন্ধ হওয়া বা বিদ্যুত ও পানির লাইন ভেঙে গেলে অবিলম্বে জরুরি হেল্পলাইনে (১১২) জানান।",
+    afterLandslideP4: "সরকারি প্রকৌশলীরা ভবনকে নিরাপদ ঘোষণা না করা পর্যন্ত ক্ষতিগ্রস্ত বাড়িতে ফিরে যাবেন না।",
+
+    emergencyDirectoryTitle: "২৪x৭ উত্তর-পূর্ব ভারতের জরুরি দুর্যোগ ডিরেক্টরি",
+    emergencyDirectorySub: "ভারত ও উত্তর-পূর্ব ভারতের ৮টি রাজ্যের জন্য যাচাইকৃত চব্বিশ ঘণ্টার সরকারি জরুরি হটলাইন।",
+
     // Disclaimer
     disclaimerText: "এআই ভূমিধসের ঝুঁকি শনাক্ত করে; অনুমোদিত দুর্যোগ ব্যবস্থাপনা কর্তৃপক্ষ চূড়ান্ত সিদ্ধান্ত গ্রহণ করে।"
   },
@@ -325,6 +421,7 @@ export const translations = {
     controlRoom: "आपातकालीन नियंत्रण कक्ष",
     fullScreen: "फुल स्क्रीन",
     viewAdvisory: "निर्देश देखें",
+    location: "स्थान",
 
     // Risk Levels
     riskLow: "कम जोखिम (LOW)",
@@ -378,6 +475,37 @@ export const translations = {
     duringLandslide: "भूस्खलन के समय तत्काल उपाय",
     afterLandslide: "भूस्खलन के बाद सुरक्षा निर्देश",
     emergencyHelplines: "24x7 आपातकालीन संपर्क नंबर",
+
+    guideOfficialBadge: "आधिकारिक सामुदायिक आपदा तैयारी प्रोटोकॉल",
+    guideMainTitle: "भूस्खलन सुरक्षा एवं सामुदायिक तैयारी मार्गदर्शिका",
+    guideMainSub: "पूर्वोत्तर भारत के पहाड़ी ढलानों पर रहने वाले परिवारों और समुदायों के लिए भारत सरकार और एनडीएमए अनुमोदित कार्य योजनाएं।",
+
+    beforeLandslideSub: "मानसून पूर्व तैयारियां और पारिवारिक योजना",
+    beforeLandslideP1: "अपने स्थानीय निकासी मार्गों को जानें और नजदीकी सुरक्षित आश्रय स्थलों की पहचान करें।",
+    beforeLandslideP2: "मानसून के महीनों में आधिकारिक मौसम सलाह और वर्षा रडार अलर्ट पर नजर रखें।",
+    beforeLandslideP3: "आवश्यक दवाओं, टॉर्च, बैटरी रेडियो और महत्वपूर्ण दस्तावेजों के साथ एक आपातकालीन बैग तैयार रखें।",
+    beforeLandslideP4: "खड़ी, बिना सुरक्षा दीवार वाली पहाड़ी ढलानों या चट्टानों के ठीक नीचे घर बनाने से बचें।",
+
+    duringRainfallSub: "निरंतर वर्षा और उच्च मृदा संतृप्ति अवधि",
+    duringRainfallP1: "सार्वजनिक पूर्व चेतावनी बुलेटिन सुनें और सुरक्षा दीवारों के पास मिट्टी की हलचल पर नजर रखें।",
+    duringRainfallP2: "पेड़ों के टूटने, पत्थरों के लुढ़कने या पानी के अचानक मटमैले होने जैसी असामान्य आवाजों के प्रति सतर्क रहें।",
+    duringRainfallP3: "संवेदनशील राष्ट्रीय राजमार्ग पहाड़ी गलियारों (NH-27, NH-6, NH-10) पर अनावश्यक यात्रा से बचें।",
+    duringRainfallP4: "यदि स्थानीय आपदा अधिकारी चेतावनी जारी करते हैं तो तुरंत सुरक्षित स्थान पर जाने के लिए तैयार रहें।",
+
+    duringLandslideSub: "जीवन सुरक्षा के लिए तत्काल कार्रवाई",
+    duringLandslideP1: "भूस्खलन या कीचड़ के बहाव के रास्ते से तेजी से हटकर सुरक्षित ऊंचे स्थान पर जाएं।",
+    duringLandslideP2: "यदि भागना संभव न हो, तो मजबूत फर्नीचर के नीचे हाथों से अपने सिर को ढककर बैठ जाएं।",
+    duringLandslideP3: "कीचड़ के मलबे या जलभराव वाली पहाड़ी सड़कों पर गाड़ी चलाने का प्रयास न करें।",
+    duringLandslideP4: "क्षतिग्रस्त बिजली के खंभों और ढीले बिजली के तारों से दूर रहें।",
+
+    afterLandslideSub: "भूस्खलन के बाद पुनर्प्राप्ति और द्वितीयक जोखिमों से बचाव",
+    afterLandslideP1: "भूस्खलन क्षेत्र से दूर रहें। प्राथमिक भूस्खलन के घंटों बाद भी द्वितीयक भूस्खलन हो सकते हैं।",
+    afterLandslideP2: "सक्रिय भूस्खलन क्षेत्र में सीधे प्रवेश किए बिना फंसे या घायल पड़ोसियों की तलाश करें।",
+    afterLandslideP3: "टूटी हुई बिजली/पानी की लाइनों और सड़क अवरोधों की तुरंत आपातकालीन अधिकारियों (112) को सूचना दें।",
+    afterLandslideP4: "जब तक स्थानीय इंजीनियर आधिकारिक रूप से संरचना को सुरक्षित घोषित न कर दें, तब तक क्षतिग्रस्त घरों में न लौटें।",
+
+    emergencyDirectoryTitle: "24x7 पूर्वोत्तर आपदा आपातकालीन निर्देशिका",
+    emergencyDirectorySub: "भारत और 8 पूर्वोत्तर राज्यों में सत्यापित आधिकारिक आपदा प्रतिक्रिया हेल्पलाइन नंबर।",
 
     // Disclaimer
     disclaimerText: "एआई भूस्खलन के जोखिम का संकेत देता है; अधिकृत आपदा प्रबंधन अधिकारी अंतिम निर्णय लेते हैं।"

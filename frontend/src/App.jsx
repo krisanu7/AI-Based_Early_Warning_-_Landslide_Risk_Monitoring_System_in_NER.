@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
+import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { DisasterSafetyBanner } from './components/layout/DisasterSafetyBanner';
 import { SIHPitchTourModal } from './components/modals/SIHPitchTourModal';
 
@@ -19,26 +20,36 @@ import { PublicWarningsPage } from './pages/PublicWarningsPage';
 import { LandslideSafetyGuidePage } from './pages/LandslideSafetyGuidePage';
 import { HistoricalAnalyticsPage } from './pages/HistoricalAnalyticsPage';
 import { AdminModelMonitoringPage } from './pages/AdminModelMonitoringPage';
+import { VisualTerrainInspectorPage } from './pages/VisualTerrainInspectorPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 
 function AppContent() {
   const [sihTourOpen, setSihTourOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors">
-      <Navbar onOpenSIHTour={() => setSihTourOpen(true)} />
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors max-w-full overflow-x-hidden">
+      <Navbar 
+        onOpenSIHTour={() => setSihTourOpen(true)} 
+        onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
+      />
       <DisasterSafetyBanner />
 
-      <div className="flex-1 flex">
-        <Sidebar />
+      <div className="flex-1 flex relative max-w-full">
+        <Sidebar 
+          isOpenMobile={mobileMenuOpen}
+          onCloseMobile={() => setMobileMenuOpen(false)}
+          onOpenSIHTour={() => setSihTourOpen(true)}
+        />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-full">
+        <main className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto max-w-full w-full pb-20 lg:pb-8">
           <Routes>
             <Route path="/" element={<LandingPage onOpenSIHTour={() => setSihTourOpen(true)} />} />
             <Route path="/dashboard" element={<MainDashboard />} />
             <Route path="/map" element={<MainDashboard />} />
             <Route path="/field-report" element={<FieldSurveillancePage />} />
+            <Route path="/visual-inspector" element={<VisualTerrainInspectorPage />} />
             <Route path="/investigation" element={<AlertInvestigationPage />} />
             <Route path="/response" element={<DisasterResponsePage />} />
             <Route path="/infrastructure" element={<InfrastructureRiskPage />} />
@@ -53,6 +64,12 @@ function AppContent() {
           </Routes>
         </main>
       </div>
+
+      {/* Floating Mobile Bottom Navigation Bar */}
+      <MobileBottomNav 
+        onOpenMenu={() => setMobileMenuOpen(true)} 
+        onOpenSIHTour={() => setSihTourOpen(true)} 
+      />
 
       <SIHPitchTourModal
         isOpen={sihTourOpen}

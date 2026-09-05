@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
-from app.database import get_locations_col, get_infrastructure_col, get_evacuation_centers_col, get_alerts_col, get_field_reports_col
+from sqlalchemy import select, func
+from app.database import get_locations_col, get_infrastructure_col, get_evacuation_centers_col, get_alerts_col
+from app.database_pg import AsyncSessionLocal
+from app.models.spatial_models import SpatialLocation, SpatialInfrastructure, SpatialEvacuationShelter, SpatialRiskZone
 from app.ml.cluster import detect_hotspot_clusters
 from app.ml.cascading import analyze_cascading_impact
 
@@ -12,34 +15,61 @@ async def get_map_risk_nodes(
     district: Optional[str] = Query(None),
     min_risk: Optional[int] = Query(0)
 ):
-    locations_col = get_locations_col()
+    """
+    Returns spatial GIS risk nodes. Tries PostgreSQL + PostGIS first for real-time GIS spatial querying,
+    falling back to MongoDB if PostgreSQL is offline.
+    """
+    from app.database_pg import get_pg_engine, AsyncSessionLocal
+    get_pg_engine()
+
+    if AsyncSessionLocal:
+        try:
+            async with AsyncSessionLocal() as session:
+                query = select(SpatialLocation)
+                if state and state != "ALL":
+                    query = query.where(func.lower(SpatialLocation.state) == state.lower())
+                if district and district != "ALL":
+                    query = query.where(func.lower(SpatialLocation.district) == district.lower())
+                if min_risk > 0:
+                    query = query.where(SpatialLocation.risk_score >= min_risk)
+
+                res = await session.execute(query)
+                spatial_nodes = res.scalars().all()
+                postgis_locations = [node.to_dict() for node in spatial_nodes]
+                if len(postgis_locations) > 0:
+                    data_source = "PostgreSQL / PostGIS"
+        except Exception as e:
+            print(f"[Map Router] PostGIS query fallback to MongoDB: {e}")
+
+    # If PostGIS returned data, use it; otherwise fallback to Mongo
+    if postgis_locations:
+        locs = postgis_locations
+    else:
+        locations_col = get_locations_col()
+        locs = await locations_col.find()
+        if state and state != "ALL":
+            locs = [l for l in locs if l.get("state", "").lower() == state.lower()]
+        if district and district != "ALL":
+            locs = [l for l in locs if l.get("district", "").lower() == district.lower()]
+        if min_risk > 0:
+            locs = [l for l in locs if l.get("risk_score", 0) >= min_risk]
+
+    # Fetch infra & shelters
     infra_col = get_infrastructure_col()
     shelters_col = get_evacuation_centers_col()
-    alerts_col = get_alerts_col()
-
-    locs = await locations_col.find()
     all_infra = await infra_col.find()
     all_shelters = await shelters_col.find()
-    all_alerts = await alerts_col.find()
-
-    # Filter
-    filtered = locs
-    if state and state != "ALL":
-        filtered = [l for l in filtered if l.get("state", "").lower() == state.lower()]
-    if district and district != "ALL":
-        filtered = [l for l in filtered if l.get("district", "").lower() == district.lower()]
-    if min_risk > 0:
-        filtered = [l for l in filtered if l.get("risk_score", 0) >= min_risk]
 
     clusters = detect_hotspot_clusters(locs, radius_km=25.0)
 
     return {
-        "locations": filtered,
+        "locations": locs,
         "clusters": clusters,
         "infrastructure": all_infra,
         "evacuation_centers": all_shelters,
-        "total_nodes": len(filtered),
-        "hotspot_clusters_detected": len(clusters)
+        "total_nodes": len(locs),
+        "hotspot_clusters_detected": len(clusters),
+        "data_source": data_source
     }
 
 @router.get("/cascading/{location_id}")
@@ -54,7 +84,7 @@ async def get_location_cascading_impact(location_id: str):
 
     target = None
     for l in locs:
-        if l.get("id") == location_id or l.get("village", "").lower() == location_id.lower():
+        if str(l.get("id")) == str(location_id) or l.get("village", "").lower() == location_id.lower():
             target = l
             break
 

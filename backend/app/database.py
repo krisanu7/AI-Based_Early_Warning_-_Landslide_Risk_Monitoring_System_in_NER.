@@ -103,3 +103,6 @@ def get_landslide_history_col(): return get_collection("landslide_history")
 def get_environmental_data_col(): return get_collection("environmental_data")
 def get_audit_logs_col(): return get_collection("audit_logs")
 def get_system_metrics_col(): return get_collection("system_metrics")
+def get_landslide_risk_col(): return get_collection("landslide_risk")
+def get_visual_inspections_col(): return get_collection("visual_inspections")
+

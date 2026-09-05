@@ -88,7 +88,11 @@ export const analyticsApi = {
 export const predictionsApi = {
   predict: (data) => api.post('/predictions', data),
   getMetrics: () => api.get('/predictions/metrics'),
+  getRecords: () => api.get('/predictions/records'),
+  clearRecords: () => api.delete('/predictions/records'),
 };
+
+
 
 export const syncApi = {
   syncBatch: (items) => api.post('/sync', { items }),
@@ -101,6 +105,11 @@ export const syncApi = {
     }
     return res.data;
   },
+};
+
+export const visualInspectorApi = {
+  analyze: (payload) => api.post('/vision/analyze', payload),
+  getHistory: (limit = 20) => api.get('/vision/history', { params: { limit } }),
 };
 
 export const systemApi = {

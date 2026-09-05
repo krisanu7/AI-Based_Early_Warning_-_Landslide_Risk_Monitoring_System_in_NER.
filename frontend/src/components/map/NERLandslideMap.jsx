@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, Circle, LayersControl, LayerGroup } from 'react-leaflet';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { RiskBadge } from '../common/RiskBadge';
 import { 
-  Mountain, 
-  CloudRain, 
-  Route, 
-  Building2, 
   Sparkles, 
-  AlertTriangle,
-  ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  Maximize2,
+  Minimize2,
+  X
 } from 'lucide-react';
+
+// Controller to trigger map resize on full-screen toggle
+const ResizeMap = ({ isFullscreen }) => {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [isFullscreen, map]);
+  return null;
+};
 
 export const NERLandslideMap = ({ 
   locations = [], 
@@ -20,9 +29,60 @@ export const NERLandslideMap = ({
   evacuationCenters = [],
   onSelectLocation = () => {},
   onOpenXAI = () => {},
-  onOpenCascading = () => {}
+  onOpenCascading = () => {},
+  isFullscreen: externalIsFullscreen,
+  onToggleFullscreen: externalOnToggleFullscreen
 }) => {
+  const [internalIsFullscreen, setInternalIsFullscreen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('ALL');
+  const containerRef = useRef(null);
+
+  const isFullscreen = externalIsFullscreen !== undefined ? externalIsFullscreen : internalIsFullscreen;
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && isFullscreen) {
+        if (externalOnToggleFullscreen) {
+          externalOnToggleFullscreen();
+        } else {
+          setInternalIsFullscreen(false);
+        }
+      }
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [isFullscreen, externalOnToggleFullscreen]);
+
+  const toggleFullscreen = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (isFullscreen) {
+      // Exit fullscreen
+      if (externalOnToggleFullscreen) {
+        externalOnToggleFullscreen();
+      } else {
+        setInternalIsFullscreen(false);
+      }
+
+      if (document.fullscreenElement) {
+        document.exitFullscreen?.().catch(() => {});
+      }
+    } else {
+      // Enter fullscreen
+      if (externalOnToggleFullscreen) {
+        externalOnToggleFullscreen();
+      } else {
+        setInternalIsFullscreen(true);
+      }
+
+      if (containerRef.current && containerRef.current.requestFullscreen) {
+        containerRef.current.requestFullscreen().catch(() => {});
+      }
+    }
+  };
 
   const getMarkerColor = (score) => {
     if (score >= 81) return '#e11d48'; // Rose/Red (Critical)
@@ -34,12 +94,16 @@ export const NERLandslideMap = ({
   const filteredLocations = locations.filter(loc => {
     if (activeFilter === 'CRITICAL') return loc.risk_score >= 81;
     if (activeFilter === 'HIGH') return loc.risk_score >= 61;
-    if (activeFilter === 'RAINFALL_TRIGGER') return loc.rainfall_24h >= 100.0;
+    if (activeFilter === 'RAINFALL_TRIGGER') return (loc.rainfall_24h_mm || loc.rainfall_24h) >= 100.0;
     return true;
   });
 
+  const containerClasses = isFullscreen
+    ? "fixed inset-0 z-[9999] w-screen h-screen rounded-none bg-slate-900 shadow-2xl transition-all duration-300"
+    : "relative w-full h-[540px] rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-slate-900 transition-all duration-300";
+
   return (
-    <div className="relative w-full h-[540px] rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-slate-900">
+    <div ref={containerRef} className={containerClasses}>
       
       {/* Quick Filter Bar */}
       <div className="absolute top-4 left-4 z-[400] flex items-center gap-1.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md text-xs">
@@ -71,7 +135,28 @@ export const NERLandslideMap = ({
               : 'text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40'
           }`}
         >
-          Rainfall Trigger ({locations.filter(l => l.rainfall_24h >= 100).length})
+          Rainfall Trigger ({locations.filter(l => (l.rainfall_24h_mm || l.rainfall_24h) >= 100).length})
+        </button>
+      </div>
+
+      {/* Fullscreen Toggle Button on Map */}
+      <div className="absolute top-4 right-4 z-[400]">
+        <button
+          onClick={toggleFullscreen}
+          className="p-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-white rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg flex items-center gap-2 text-xs font-bold transition-all cursor-pointer"
+          title={isFullscreen ? "Exit Fullscreen" : "Full Screen Mode"}
+        >
+          {isFullscreen ? (
+            <>
+              <Minimize2 className="w-4 h-4 text-rose-500" />
+              <span className="hidden sm:inline">Exit Fullscreen</span>
+            </>
+          ) : (
+            <>
+              <Maximize2 className="w-4 h-4 text-blue-500" />
+              <span className="hidden sm:inline">Full Screen</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -105,6 +190,8 @@ export const NERLandslideMap = ({
         scrollWheelZoom={true}
         className="w-full h-full"
       >
+        <ResizeMap isFullscreen={isFullscreen} />
+
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -137,7 +224,7 @@ export const NERLandslideMap = ({
                   Peak Risk: <strong>{clus.max_risk}/100</strong>
                 </p>
                 <p className="text-slate-600 text-[11px]">
-                  Total Population Exposed: <strong>{clus.total_population_exposed.toLocaleString()}</strong>
+                  Total Population Exposed: <strong>{(clus.total_population_exposed || 0).toLocaleString()}</strong>
                 </p>
               </div>
             </Popup>
@@ -225,11 +312,11 @@ export const NERLandslideMap = ({
                   <div className="grid grid-cols-2 gap-2 text-[11px]">
                     <div className="bg-slate-50 p-1.5 rounded-lg border border-slate-100">
                       <span className="text-slate-400 block text-[10px]">24h Rainfall:</span>
-                      <strong className="text-blue-700 font-black">{loc.rainfall_24h || 0} mm</strong>
+                      <strong className="text-blue-700 font-black">{loc.rainfall_24h_mm || loc.rainfall_24h || 0} mm</strong>
                     </div>
                     <div className="bg-slate-50 p-1.5 rounded-lg border border-slate-100">
                       <span className="text-slate-400 block text-[10px]">Slope Angle:</span>
-                      <strong className="text-slate-800 font-bold">{loc.slope_degrees || 0}°</strong>
+                      <strong className="text-slate-800 font-bold">{loc.slope_angle || loc.slope_degrees || 0}°</strong>
                     </div>
                     <div className="bg-slate-50 p-1.5 rounded-lg border border-slate-100">
                       <span className="text-slate-400 block text-[10px]">Soil Moisture:</span>

@@ -133,10 +133,10 @@ export const AdminModelMonitoringPage = () => {
 
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-900 dark:text-white">Random Forest Model</span>
-              <span className="text-[10px] font-bold text-purple-600">{modelMetrics?.model_version || 'v2.4'}</span>
+              <span className="font-bold text-slate-900 dark:text-white">Landslide PKL Pipeline</span>
+              <span className="text-[10px] font-bold text-purple-600">{modelMetrics?.model_version || 'Landslide-PKL-v1.0'}</span>
             </div>
-            <p className="text-[11px] text-slate-500">Scikit-Learn (100 Decision Trees)</p>
+            <p className="text-[11px] text-slate-500">Scikit-Learn Pipeline (landslide_model.pkl)</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1">
