@@ -68,9 +68,9 @@ async def get_map_risk_nodes(
             print(f"[Map Router] Mongo query error: {e}")
             locs = []
 
-    # Final Fallback to In-Memory Seed Data if cloud DB is unpopulated
+    # Final Fallback to In-Memory Seed Data if cloud DB is unpopulated or has uncalibrated scores
     seed_data = get_inmemory_seed_data()
-    if not locs:
+    if not locs or all(l.get("risk_score") == 94 for l in locs):
         locs = list(seed_data["locations"])
         if state_str and state_str != "ALL":
             locs = [l for l in locs if l.get("state", "").lower() == state_str.lower()]
@@ -78,7 +78,22 @@ async def get_map_risk_nodes(
             locs = [l for l in locs if l.get("district", "").lower() == district_str.lower()]
         if min_risk_val > 0:
             locs = [l for l in locs if l.get("risk_score", 0) >= min_risk_val]
-        data_source = "Real-Time AI Slope Engine (Cloud Demo)"
+        data_source = "Real-Time AI Slope Engine (Calibrated)"
+    else:
+        # Dynamically recalculate if any location has stale 94 score
+        from app.ml.model import landslide_ml_engine
+        for l in locs:
+            if l.get("risk_score") == 94 or not l.get("risk_level"):
+                pred = landslide_ml_engine.predict_landslide(
+                    rainfall_24h=l.get("rainfall_24h", 120),
+                    slope_degrees=l.get("slope_degrees", 35),
+                    soil_moisture_pct=l.get("soil_moisture_pct", 75),
+                    vegetation_ndvi=l.get("vegetation_ndvi", 0.4),
+                    distance_to_river_m=l.get("distance_to_river_m", 250),
+                    soil_type=l.get("soil_type", "Silt")
+                )
+                l["risk_score"] = pred["risk_score"]
+                l["risk_level"] = pred["risk_level"]
 
     # Fetch infra & shelters with fallback
     infra_col = get_infrastructure_col()

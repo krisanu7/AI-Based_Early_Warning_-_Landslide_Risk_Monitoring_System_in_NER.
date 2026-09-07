@@ -18,8 +18,22 @@ async def get_dashboard_summary():
         locs = await locations_col.find()
     except Exception:
         locs = []
-    if not locs:
+    if not locs or all(l.get("risk_score") == 94 for l in locs):
         locs = seed["locations"]
+    else:
+        from app.ml.model import landslide_ml_engine
+        for l in locs:
+            if l.get("risk_score") == 94 or not l.get("risk_level"):
+                pred = landslide_ml_engine.predict_landslide(
+                    rainfall_24h=l.get("rainfall_24h", 120),
+                    slope_degrees=l.get("slope_degrees", 35),
+                    soil_moisture_pct=l.get("soil_moisture_pct", 75),
+                    vegetation_ndvi=l.get("vegetation_ndvi", 0.4),
+                    distance_to_river_m=l.get("distance_to_river_m", 250),
+                    soil_type=l.get("soil_type", "Silt")
+                )
+                l["risk_score"] = pred["risk_score"]
+                l["risk_level"] = pred["risk_level"]
 
     try:
         alerts = await alerts_col.find()
