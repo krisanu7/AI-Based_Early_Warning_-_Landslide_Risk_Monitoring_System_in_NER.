@@ -984,11 +984,69 @@ def get_inmemory_seed_data():
         s["id"] = f"SHELTER-NER-{i+1:03d}"
         shelters.append(s)
 
+    demo_reports = [
+        {
+            "id": "RPT-NER-DEMO-001",
+            "state": "Assam",
+            "district": "Dima Hasao",
+            "village": "Haflong Hill Section",
+            "latitude": 25.1784,
+            "longitude": 93.0234,
+            "observation_date": datetime.utcnow().strftime("%Y-%m-%d"),
+            "visible_cracks": True,
+            "soil_mud_movement": True,
+            "rockfall_observed": False,
+            "water_seepage_present": True,
+            "road_blocked": True,
+            "house_damage": False,
+            "infrastructure_damage": True,
+            "estimated_severity": "SEVERE",
+            "status": "PENDING_VERIFICATION",
+            "approx_people_affected": 240,
+            "casualties_count": 0,
+            "missing_persons_count": 0,
+            "rainfall_intensity_observed": "HEAVY",
+            "reporter_name": "Arun Bordoloi (Ground Surveyor)",
+            "reporter_role": "FIELD_WORKER",
+            "field_notes": "Tension cracks widening along NH-54 bypass after 140mm rainfall surge.",
+            "created_at": (datetime.utcnow() - timedelta(hours=3)).isoformat()
+        },
+        {
+            "id": "RPT-NER-DEMO-002",
+            "state": "Meghalaya",
+            "district": "East Khasi Hills",
+            "village": "Mawsynram Slopes",
+            "latitude": 25.2975,
+            "longitude": 91.5826,
+            "observation_date": datetime.utcnow().strftime("%Y-%m-%d"),
+            "visible_cracks": True,
+            "soil_mud_movement": False,
+            "rockfall_observed": True,
+            "water_seepage_present": True,
+            "road_blocked": False,
+            "house_damage": False,
+            "infrastructure_damage": False,
+            "estimated_severity": "MODERATE",
+            "status": "VERIFIED",
+            "verified_by": "Dr. Subhashish Deb (District Disaster Officer)",
+            "verified_at": datetime.utcnow().isoformat(),
+            "approx_people_affected": 85,
+            "casualties_count": 0,
+            "missing_persons_count": 0,
+            "rainfall_intensity_observed": "TORRENTIAL",
+            "reporter_name": "M. Sangma (Rapid Scout)",
+            "reporter_role": "FIELD_WORKER",
+            "field_notes": "Small rockfall on cliff shoulder. Culvert drainage partially overwhelmed.",
+            "created_at": (datetime.utcnow() - timedelta(hours=7)).isoformat()
+        }
+    ]
+
     _cached_seed_payload = {
         "locations": locations,
         "alerts": alerts,
         "infrastructure": infra,
-        "evacuation_centers": shelters
+        "evacuation_centers": shelters,
+        "field_reports": demo_reports
     }
     return _cached_seed_payload
 

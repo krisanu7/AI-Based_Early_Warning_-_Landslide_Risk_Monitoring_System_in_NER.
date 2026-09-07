@@ -136,16 +136,22 @@ export const MainDashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [dashRes, mapRes, recRes] = await Promise.all([
+      const [dashRes, mapRes, recRes] = await Promise.allSettled([
         dashboardApi.getSummary(),
         mapApi.getRiskNodes(),
         predictionsApi.getRecords()
       ]);
-      setSummary(dashRes.data);
-      setMapData(mapRes.data);
-      setStoredRiskRecords(recRes.data || []);
-      if (mapRes.data?.locations?.length > 0) {
-        setSelectedLocation(mapRes.data.locations[0]);
+      if (dashRes.status === 'fulfilled' && dashRes.value?.data) {
+        setSummary(dashRes.value.data);
+      }
+      if (mapRes.status === 'fulfilled' && mapRes.value?.data) {
+        setMapData(mapRes.value.data);
+        if (mapRes.value.data?.locations?.length > 0) {
+          setSelectedLocation(mapRes.value.data.locations[0]);
+        }
+      }
+      if (recRes.status === 'fulfilled' && recRes.value?.data) {
+        setStoredRiskRecords(recRes.value.data || []);
       }
     } catch (err) {
       console.error('Failed to load dashboard telemetry', err);

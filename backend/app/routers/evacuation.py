@@ -11,14 +11,27 @@ async def list_evacuation_centers(
     state: Optional[str] = Query(None),
     district: Optional[str] = Query(None)
 ):
+    from app.seed_data import get_inmemory_seed_data
+    seed = get_inmemory_seed_data()
+
+    state_str = state if isinstance(state, str) else None
+    district_str = district if isinstance(district, str) else None
+
     shelters_col = get_evacuation_centers_col()
     query = {}
-    if state and state != "ALL":
-        query["state"] = state
-    if district and district != "ALL":
-        query["district"] = district
+    if state_str and state_str != "ALL":
+        query["state"] = state_str
+    if district_str and district_str != "ALL":
+        query["district"] = district_str
 
     shelters = await shelters_col.find(query)
+    if not shelters:
+        shelters = list(seed.get("evacuation_centers", []))
+        if state_str and state_str != "ALL":
+            shelters = [s for s in shelters if s.get("state", "").lower() == state_str.lower()]
+        if district_str and district_str != "ALL":
+            shelters = [s for s in shelters if s.get("district", "").lower() == district_str.lower()]
+
     return shelters
 
 @router.get("/evacuation-centers/nearest")
@@ -27,8 +40,11 @@ async def find_nearest_evacuation_center(
     lon: float = Query(...),
     limit: int = Query(3)
 ):
+    from app.seed_data import get_inmemory_seed_data
     shelters_col = get_evacuation_centers_col()
     shelters = await shelters_col.find()
+    if not shelters:
+        shelters = list(get_inmemory_seed_data().get("evacuation_centers", []))
 
     enriched = []
     for s in shelters:

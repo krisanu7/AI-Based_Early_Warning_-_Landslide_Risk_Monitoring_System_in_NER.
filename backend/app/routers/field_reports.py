@@ -12,16 +12,30 @@ async def list_field_reports(
     village: Optional[str] = Query(None),
     status: Optional[str] = Query(None)
 ):
+    district_str = district if isinstance(district, str) else None
+    village_str = village if isinstance(village, str) else None
+    status_str = status if isinstance(status, str) else None
+
     reports_col = get_field_reports_col()
     query = {}
-    if district and district != "ALL":
-        query["district"] = district
-    if village and village != "ALL":
-        query["village"] = village
-    if status and status != "ALL":
-        query["status"] = status
+    if district_str and district_str != "ALL":
+        query["district"] = district_str
+    if village_str and village_str != "ALL":
+        query["village"] = village_str
+    if status_str and status_str != "ALL":
+        query["status"] = status_str
 
     reports = await reports_col.find(query)
+    if not reports:
+        from app.seed_data import get_inmemory_seed_data
+        reports = list(get_inmemory_seed_data().get("field_reports", []))
+        if district_str and district_str != "ALL":
+            reports = [r for r in reports if r.get("district", "").lower() == district_str.lower()]
+        if village_str and village_str != "ALL":
+            reports = [r for r in reports if r.get("village", "").lower() == village_str.lower()]
+        if status_str and status_str != "ALL":
+            reports = [r for r in reports if r.get("status") == status_str]
+
     # Sort newest first
     reports.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     return reports
@@ -37,10 +51,11 @@ async def create_field_report(report: FieldReportCreate):
     report_dict["created_at"] = datetime.utcnow().isoformat()
     report_dict["verified_by"] = None
     report_dict["verified_at"] = None
+    report_dict["id"] = f"RPT-NER-{int(datetime.utcnow().timestamp()*1000)}"
 
     result = await reports_col.insert_one(report_dict)
-    report_id = str(result.inserted_id)
-    report_dict["id"] = report_id
+    if result and hasattr(result, "inserted_id") and result.inserted_id:
+        report_dict["id"] = str(result.inserted_id)
 
     # If severe/critical signs reported, elevate the corresponding location risk in real time
     if report.visible_cracks or report.soil_mud_movement or report.rockfall_observed or report.road_blocked:

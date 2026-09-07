@@ -22,6 +22,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    import traceback
+    print(f"[ERROR] {request.method} {request.url.path}: {exc}")
+    traceback.print_exc()
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        status_code=500,
+        content={"error": "Internal Server Error", "detail": str(exc), "path": request.url.path}
+    )
+
 @app.on_event("startup")
 async def startup_event():
     connect_db() # MongoDB initialization
