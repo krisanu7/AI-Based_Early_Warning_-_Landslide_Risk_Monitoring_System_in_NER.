@@ -83,23 +83,30 @@ class LandslideRiskMLEngine:
             except (ValueError, TypeError):
                 return float(default)
 
-        r_mm = _parse(Rainfall_mm, 180.0)
-        s_angle = _parse(Slope_Angle, 30.0)
-        s_sat = _parse(Soil_Saturation, 0.90)
-        v_cov = _parse(Vegetation_Cover, 0.15)
-        eq_act = _parse(Earthquake_Activity, 4.5)
-        prox_w = _parse(Proximity_to_Water, 1.0)
+        # Support kwargs aliases passed by seed_data, GIS or API callers
+        r_mm = _parse(kwargs.get("rainfall_24h", kwargs.get("rainfall_mm", Rainfall_mm)), 180.0)
+        s_angle = _parse(kwargs.get("slope_degrees", kwargs.get("slope_angle", Slope_Angle)), 30.0)
+        
+        raw_sat = kwargs.get("soil_moisture_pct", kwargs.get("soil_saturation", Soil_Saturation))
+        parsed_sat = _parse(raw_sat, 0.90)
+        # Convert percentage (e.g. 86.4) to 0.0-1.0 fraction
+        s_sat = parsed_sat / 100.0 if parsed_sat > 1.0 else parsed_sat
+        
+        v_cov = _parse(kwargs.get("vegetation_ndvi", kwargs.get("vegetation_cover", Vegetation_Cover)), 0.15)
+        eq_act = _parse(kwargs.get("earthquake_activity", Earthquake_Activity), 4.5)
+        prox_w = _parse(kwargs.get("distance_to_river_m", kwargs.get("proximity_to_water", Proximity_to_Water)), 1.0)
 
         # Support direct one-hot soil type flags if passed
+        passed_soil = kwargs.get("soil_type", Soil_Type)
         if Soil_Type_Gravel is not None or Soil_Type_Sand is not None or Soil_Type_Silt is not None:
             gravel = int(_parse(Soil_Type_Gravel, 0))
             sand = int(_parse(Soil_Type_Sand, 0))
             silt = int(_parse(Soil_Type_Silt, 1))
         else:
-            soil_type_str = str(Soil_Type).lower()
+            soil_type_str = str(passed_soil).lower()
             gravel = 1 if "gravel" in soil_type_str else 0
             sand = 1 if "sand" in soil_type_str else 0
-            silt = 1 if "silt" in soil_type_str else 0
+            silt = 1 if "silt" in soil_type_str or "clay" in soil_type_str or "shale" in soil_type_str else 0
 
         input_data = pd.DataFrame([{
             "Rainfall_mm": r_mm,
@@ -124,30 +131,31 @@ class LandslideRiskMLEngine:
                 # Buffer dtype mismatch (cross-platform Windows->Linux pickle) or version drift
                 prob_class_1 = None
 
-        if prob_class_1 is None:
-            # Calibrated Geotechnical Slope Stability & Multi-Temporal Rainfall Physics Ensemble
-            rf_factor = min(1.0, max(0.0, r_mm / 160.0)) * 36.0
-            slope_factor = min(1.0, max(0.0, (s_angle - 12.0) / 38.0)) * 28.0
-            sat_val = s_sat if s_sat <= 1.0 else s_sat / 100.0
-            sat_factor = min(1.0, max(0.0, sat_val)) * 22.0
-            eq_factor = min(1.0, max(0.0, eq_act / 6.0)) * 10.0
-            water_factor = max(0.0, (1.0 - min(1.0, prox_w / 250.0))) * 6.0
-            veg_protection = min(1.0, max(0.0, v_cov)) * 8.0
+        # Calibrated Geotechnical Slope Stability & Multi-Temporal Rainfall Physics Ensemble
+        rf_factor = min(1.0, max(0.0, r_mm / 180.0)) * 38.0
+        slope_factor = min(1.0, max(0.0, (s_angle - 15.0) / 35.0)) * 28.0
+        sat_factor = min(1.0, max(0.0, s_sat)) * 20.0
+        eq_factor = min(1.0, max(0.0, eq_act / 6.0)) * 8.0
+        water_factor = max(0.0, (1.0 - min(1.0, prox_w / 500.0))) * 6.0
+        veg_protection = min(1.0, max(0.0, v_cov)) * 8.0
 
-            soil_mod = 1.0
-            if silt:
-                soil_mod = 1.15
-            elif sand:
-                soil_mod = 1.05
-            elif gravel:
-                soil_mod = 0.90
+        soil_mod = 1.0
+        if silt:
+            soil_mod = 1.08
+        elif gravel:
+            soil_mod = 0.92
 
-            raw_score = (rf_factor + slope_factor + sat_factor + eq_factor + water_factor - veg_protection) * soil_mod
-            raw_score = max(5.0, min(98.0, raw_score))
-            prob_class_1 = raw_score / 100.0
-            confidence = 0.945
+        raw_score = (rf_factor + slope_factor + sat_factor + eq_factor + water_factor - veg_protection) * soil_mod
+        physics_score = max(10.0, min(96.0, raw_score))
 
-        risk_score = int(round(prob_class_1 * 100))
+        # If Scikit-Learn tree model is loaded, ensemble its signal with continuous geotechnical physics
+        if prob_class_1 is not None and self.model is not None:
+            # 30% ML Tree + 70% Geotechnical Physics ensures smooth continuous gradation across all 4 tiers
+            combined = 0.30 * (prob_class_1 * 100.0) + 0.70 * physics_score
+        else:
+            combined = physics_score
+
+        risk_score = int(round(combined))
         risk_score = max(0, min(100, risk_score))
 
         # Risk Classification as specified:

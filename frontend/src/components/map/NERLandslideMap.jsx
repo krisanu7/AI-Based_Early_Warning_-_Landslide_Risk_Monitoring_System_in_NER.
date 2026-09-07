@@ -93,10 +93,18 @@ export const NERLandslideMap = ({
 
   const filteredLocations = locations.filter(loc => {
     if (activeFilter === 'CRITICAL') return loc.risk_score >= 81;
-    if (activeFilter === 'HIGH') return loc.risk_score >= 61;
+    if (activeFilter === 'HIGH') return loc.risk_score >= 61 && loc.risk_score < 81;
+    if (activeFilter === 'MODERATE') return loc.risk_score >= 31 && loc.risk_score < 61;
+    if (activeFilter === 'LOW') return loc.risk_score < 31;
     if (activeFilter === 'RAINFALL_TRIGGER') return (loc.rainfall_24h_mm || loc.rainfall_24h) >= 100.0;
     return true;
   });
+
+  const criticalCount = locations.filter(l => l.risk_score >= 81).length;
+  const highCount = locations.filter(l => l.risk_score >= 61 && l.risk_score < 81).length;
+  const moderateCount = locations.filter(l => l.risk_score >= 31 && l.risk_score < 61).length;
+  const lowCount = locations.filter(l => l.risk_score < 31).length;
+  const rainTriggerCount = locations.filter(l => (l.rainfall_24h_mm || l.rainfall_24h) >= 100).length;
 
   const containerClasses = isFullscreen
     ? "fixed inset-0 z-[9999] w-screen h-screen rounded-none bg-slate-900 shadow-2xl transition-all duration-300"
@@ -106,36 +114,66 @@ export const NERLandslideMap = ({
     <div ref={containerRef} className={containerClasses}>
       
       {/* Quick Filter Bar */}
-      <div className="absolute top-4 left-4 z-[400] flex items-center gap-1.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md text-xs">
+      <div className="absolute top-4 left-4 z-[400] flex items-center gap-1 sm:gap-1.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md text-xs max-w-[calc(100vw-90px)] sm:max-w-none overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveFilter('ALL')}
-          className={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+          className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap ${
             activeFilter === 'ALL'
               ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-sm'
               : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
-          All Slopes ({locations.length})
+          All ({locations.length})
         </button>
         <button
           onClick={() => setActiveFilter('CRITICAL')}
-          className={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+          className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap ${
             activeFilter === 'CRITICAL'
               ? 'bg-rose-600 text-white shadow-sm'
               : 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40'
           }`}
         >
-          Critical ({locations.filter(l => l.risk_score >= 81).length})
+          Critical ({criticalCount})
+        </button>
+        <button
+          onClick={() => setActiveFilter('HIGH')}
+          className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap ${
+            activeFilter === 'HIGH'
+              ? 'bg-amber-600 text-white shadow-sm'
+              : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+          }`}
+        >
+          High Risk ({highCount})
+        </button>
+        <button
+          onClick={() => setActiveFilter('MODERATE')}
+          className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap ${
+            activeFilter === 'MODERATE'
+              ? 'bg-yellow-500 text-slate-900 shadow-sm'
+              : 'text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-950/40'
+          }`}
+        >
+          Moderate ({moderateCount})
+        </button>
+        <button
+          onClick={() => setActiveFilter('LOW')}
+          className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap ${
+            activeFilter === 'LOW'
+              ? 'bg-emerald-600 text-white shadow-sm'
+              : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
+          }`}
+        >
+          Low Risk ({lowCount})
         </button>
         <button
           onClick={() => setActiveFilter('RAINFALL_TRIGGER')}
-          className={`px-2.5 py-1 rounded-xl font-bold transition-all ${
+          className={`px-2.5 py-1 rounded-xl font-bold transition-all whitespace-nowrap ${
             activeFilter === 'RAINFALL_TRIGGER'
               ? 'bg-blue-600 text-white shadow-sm'
               : 'text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40'
           }`}
         >
-          Rainfall Trigger ({locations.filter(l => (l.rainfall_24h_mm || l.rainfall_24h) >= 100).length})
+          Rainfall ({rainTriggerCount})
         </button>
       </div>
 
