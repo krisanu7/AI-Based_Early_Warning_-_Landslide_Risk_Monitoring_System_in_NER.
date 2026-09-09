@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e11d48'><path d='M14 6l7 12H3L9 7l4 5 1-6z'/></svg>" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SafeSlope NER | AI-Based Landslide Early Warning & Risk Monitoring System</title>
     <!-- Google Fonts Inter -->
@@ -14,6 +14,38 @@
   </head>
   <body class="bg-slate-50 text-slate-900 antialiased selection:bg-rose-500 selection:text-white">
     <div id="root"></div>
+    <div id="google_translate_element" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;"></div>
+    
+    <script type="text/javascript">
+      // Prevent React crash when translation engines wrap/alter text nodes
+      if (typeof Node === 'function' && Node.prototype) {
+        const origRemoveChild = Node.prototype.removeChild;
+        Node.prototype.removeChild = function(child) {
+          if (child.parentNode !== this) {
+            return child;
+          }
+          return origRemoveChild.apply(this, arguments);
+        };
+        const origInsertBefore = Node.prototype.insertBefore;
+        Node.prototype.insertBefore = function(newNode, refNode) {
+          if (refNode && refNode.parentNode !== this) {
+            return newNode;
+          }
+          return origInsertBefore.apply(this, arguments);
+        };
+      }
+
+      function googleTranslateElementInit() {
+        if (window.google && window.google.translate) {
+          new window.google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,as,bn,hi',
+            autoDisplay: false
+          }, 'google_translate_element');
+        }
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

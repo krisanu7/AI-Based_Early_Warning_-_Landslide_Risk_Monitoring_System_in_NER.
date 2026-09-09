@@ -53,7 +53,10 @@ export const Navbar = ({ onOpenSIHTour, onToggleMobileMenu }) => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors w-full overflow-x-clip">
+    <header 
+      style={{ top: 'var(--gt-offset, 0px)' }}
+      className="sticky z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-all w-full overflow-x-clip"
+    >
       <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-1.5 sm:gap-4">
         
         {/* Brand & Mobile Hamburger Button */}
@@ -67,17 +70,19 @@ export const Navbar = ({ onOpenSIHTour, onToggleMobileMenu }) => {
             <Menu className="w-5 h-5 text-rose-600 dark:text-rose-400" />
           </button>
 
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-amber-600 via-rose-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-rose-600/20 group-hover:scale-105 transition-transform shrink-0">
-              <Mountain className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <img 
+              src="/logo.png" 
+              alt="InnovateX Logo" 
+              className="h-9 sm:h-10 w-auto object-contain rounded-xl drop-shadow-sm group-hover:scale-105 transition-transform shrink-0" 
+            />
             <div className="hidden sm:block">
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white">
                   NER Landslide AI
                 </span>
-                <span className="hidden md:inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
-                  SafeSlope NER
+                <span className="hidden md:inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">
+                  InnovateX
                 </span>
               </div>
             </div>

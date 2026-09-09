@@ -115,9 +115,11 @@ export const LoginPage = ({ initialMode = 'login' }) => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-rose-600 to-indigo-600 flex items-center justify-center text-white mx-auto shadow-md shadow-rose-600/25">
-            <Mountain className="w-6 h-6" />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="InnovateX Logo" 
+            className="h-16 w-auto mx-auto object-contain drop-shadow-md rounded-xl" 
+          />
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             NER Landslide AI
           </h1>

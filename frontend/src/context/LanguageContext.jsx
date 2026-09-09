@@ -1,19 +1,108 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { translations } from '../i18n/translations';
+import { syncGoogleTranslate, applyInstantDomTranslation } from '../utils/domTranslator';
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState(() => {
+  const [language, setLanguageState] = useState(() => {
     return localStorage.getItem('ner_landslide_language') || 'en';
   });
   
   const [isSpeaking, setIsSpeaking] = useState(false);
   const currentAudioRef = useRef(null);
 
+  // Synchronize Google Translate & Instant DOM Translation
+  const setLanguage = (newLang) => {
+    setLanguageState(newLang);
+    localStorage.setItem('ner_landslide_language', newLang);
+    syncGoogleTranslate(newLang);
+    setTimeout(() => {
+      applyInstantDomTranslation(newLang);
+    }, 10);
+  };
+
   useEffect(() => {
     localStorage.setItem('ner_landslide_language', language);
+    syncGoogleTranslate(language);
+    applyInstantDomTranslation(language);
+
+    // Watch DOM mutations to auto-translate newly mounted React components/routes
+    const observer = new MutationObserver((mutations) => {
+      if (language !== 'en') {
+        for (const m of mutations) {
+          if (m.addedNodes && m.addedNodes.length > 0) {
+            for (const node of m.addedNodes) {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                applyInstantDomTranslation(language, node);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Also listen for URL route change events
+    const handleLocationChange = () => {
+      setTimeout(() => {
+        applyInstantDomTranslation(language);
+        syncGoogleTranslate(language);
+      }, 100);
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('popstate', handleLocationChange);
+    };
   }, [language]);
+
+  // Continuously track Google Translate top banner height to adjust Navbar & layout
+  useEffect(() => {
+    const syncBannerOffset = () => {
+      let offset = 0;
+
+      // 1. Check Google Translate iframe
+      const banner = document.querySelector('iframe.goog-te-banner-frame') ||
+                     document.querySelector('iframe[id^=":"][id$=".container"]');
+      
+      if (banner && window.getComputedStyle(banner).display !== 'none' && banner.offsetHeight > 0) {
+        offset = banner.offsetHeight;
+      } else {
+        // 2. Check if body top is pushed down by Google Translate
+        const bodyTop = parseInt(document.body.style.top || '0', 10);
+        if (bodyTop > 0) {
+          offset = bodyTop;
+        }
+      }
+
+      document.documentElement.style.setProperty('--gt-offset', `${offset}px`);
+    };
+
+    syncBannerOffset();
+    const interval = setInterval(syncBannerOffset, 200);
+
+    const observer = new MutationObserver(syncBannerOffset);
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['style', 'class'],
+      subtree: false
+    });
+
+    window.addEventListener('resize', syncBannerOffset);
+
+    return () => {
+      clearInterval(interval);
+      observer.disconnect();
+      window.removeEventListener('resize', syncBannerOffset);
+    };
+  }, []);
 
   // Pre-warm browser voices on load
   useEffect(() => {

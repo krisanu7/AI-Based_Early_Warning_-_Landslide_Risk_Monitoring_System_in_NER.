@@ -26,9 +26,16 @@ export const LandingPage = ({ onOpenSIHTour }) => {
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-rose-950 to-slate-900 border border-slate-800 text-white p-8 sm:p-14 shadow-2xl">
         <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-black uppercase tracking-wider backdrop-blur">
-            <Sparkles className="w-4 h-4 text-rose-400" />
-            <span>Smart India Hackathon 2026</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <img 
+              src="/logo.png" 
+              alt="InnovateX Logo" 
+              className="h-10 sm:h-12 w-auto object-contain bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/15" 
+            />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-black uppercase tracking-wider backdrop-blur">
+              <Sparkles className="w-4 h-4 text-rose-400" />
+              <span>Smart India Hackathon 2026 • InnovateX</span>
+            </div>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
@@ -110,7 +117,7 @@ export const LandingPage = ({ onOpenSIHTour }) => {
               Predict & Explain
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Random Forest Landslide Susceptibility & Trigger Model (93.4% accuracy) with Explainable AI (XAI) feature attribution inspector.
+              Random Forest Landslide Susceptibility & Trigger Model (99% accuracy) with Explainable AI (XAI) feature attribution inspector.
             </p>
           </div>
 

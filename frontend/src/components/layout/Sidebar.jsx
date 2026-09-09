@@ -47,7 +47,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
     { to: '/dashboard', label: t('navDashboard'), icon: LayoutDashboard, roles: ['ALL'] },
     { to: '/map', label: t('navLiveMap'), icon: Map, roles: ['ALL'] },
     { to: '/field-report', label: t('navFieldReport'), icon: ClipboardEdit, roles: ['FIELD_WORKER', 'BLOCK_OFFICER', 'ADMIN', 'PUBLIC'] },
-    { to: '/visual-inspector', label: 'AI Visual Inspector', icon: Eye, roles: ['ALL'] },
+    { to: '/visual-inspector', label: t('navVisualInspector'), icon: Eye, roles: ['ALL'] },
     { to: '/investigation', label: t('navInvestigation'), icon: ShieldAlert, roles: ['BLOCK_OFFICER', 'DISTRICT_OFFICER', 'AUTHORITY', 'ADMIN'] },
     { to: '/response', label: t('navResponse'), icon: Truck, roles: ['DISTRICT_OFFICER', 'AUTHORITY', 'ADMIN'] },
     { to: '/infrastructure', label: t('navInfrastructure'), icon: Route, roles: ['ALL'] },
@@ -56,7 +56,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
     { to: '/analytics', label: t('navAnalytics'), icon: BarChart3, roles: ['ALL'] },
     { to: '/model-monitoring', label: t('navModelMonitoring'), icon: Cpu, roles: ['DISTRICT_OFFICER', 'AUTHORITY', 'ADMIN'] },
     { to: '/safety-guide', label: t('navSafetyGuide'), icon: BookOpen, roles: ['ALL'] },
-    { to: '/login', label: 'Auth / Persona Sign In', icon: LogIn, roles: ['ALL'] },
+    { to: '/login', label: t('navSignIn'), icon: LogIn, roles: ['ALL'] },
   ];
 
   const currentRole = user?.role || 'PUBLIC';
@@ -75,9 +75,11 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
         {/* Mobile Header title inside drawer */}
         <div className="lg:hidden flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-600 via-rose-600 to-indigo-600 flex items-center justify-center text-white">
-              <Mountain className="w-4 h-4" />
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="InnovateX Logo" 
+              className="h-8 w-auto object-contain rounded-lg shrink-0" 
+            />
             <span className="font-black text-sm text-slate-900 dark:text-white">
               NER Landslide AI
             </span>
@@ -109,14 +111,14 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
         {/* Quick Mobile Controls (Language & Theme Mode) */}
         <div className="lg:hidden p-3 rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
           <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-            System Preferences
+            {t('systemPreferences')}
           </div>
 
           {/* Language Selector Grid */}
           <div className="space-y-1">
             <div className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
               <Globe className="w-3.5 h-3.5 text-blue-500" />
-              <span>Language ({language.toUpperCase()})</span>
+              <span>{t('languageLabel')} ({language.toUpperCase()})</span>
             </div>
             <div className="grid grid-cols-2 gap-1.5 pt-0.5">
               {LANGUAGES.map((l) => (
@@ -139,7 +141,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
               {theme === 'dark' ? <Moon className="w-3.5 h-3.5 text-amber-400" /> : <Sun className="w-3.5 h-3.5 text-amber-500" />}
-              <span>Appearance Mode</span>
+              <span>{t('appearanceMode')}</span>
             </span>
             <button
               onClick={toggleTheme}
@@ -153,7 +155,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
         {/* Active Role Indicator Card */}
         <div className="p-3.5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/80 dark:to-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-1.5">
           <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-slate-400">
-            <span>Active Persona</span>
+            <span>{t('activePersona')}</span>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
           </div>
           <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
@@ -172,7 +174,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
               className="w-full mt-1 pt-1.5 border-t border-slate-200 dark:border-slate-700/60 text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 flex items-center justify-center gap-1 transition-colors"
             >
               <LogOut className="w-3 h-3" />
-              <span>Logout Persona</span>
+              <span>{t('logoutPersona')}</span>
             </button>
           )}
         </div>
@@ -208,7 +210,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
         <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 space-y-1 text-center">
           <div className="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 flex items-center justify-center gap-1">
             <AlertTriangle className="w-3 h-3" />
-            <span>24x7 State EOC Hotline</span>
+            <span>{t('eocHotline')}</span>
           </div>
           <p className="text-sm font-black text-rose-700 dark:text-rose-300 font-mono">
             Dial 112 / 1070
@@ -221,13 +223,16 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
   return (
     <>
       {/* Desktop Permanent Sidebar */}
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shrink-0 transition-colors hidden lg:block min-h-[calc(100vh-4rem)]">
+      <aside 
+        style={{ minHeight: 'calc(100vh - 4rem - var(--gt-offset, 0px))' }}
+        className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shrink-0 transition-colors hidden lg:block"
+      >
         {renderSidebarContent()}
       </aside>
 
       {/* Mobile Drawer Overlay Sidebar */}
       {isOpenMobile && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div style={{ top: 'var(--gt-offset, 0px)' }} className="lg:hidden fixed inset-0 z-50 flex">
           {/* Backdrop */}
           <div 
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm animate-in fade-in"

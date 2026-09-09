@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { visualInspectorApi } from '../api/client';
 import { 
   UploadCloud, 
@@ -82,6 +83,7 @@ const SAMPLE_PRESETS = [
 
 export const VisualTerrainInspectorPage = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const [imagePreview, setImagePreview] = useState(null);
   const [imageBase64, setImageBase64] = useState('');
@@ -298,13 +300,13 @@ export const VisualTerrainInspectorPage = () => {
           <div className="space-y-2 max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold tracking-wide uppercase">
               <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin" />
-              <span>Multimodal Vision Copilot • Powered by Google Gemini 3.1 Flash Lite</span>
+              <span>{t('viBadge')}</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-3">
-              <span>AI Visual Landslide & Road/Field Inspector</span>
+              <span>{t('viTitle')}</span>
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-              Drag or upload any slope, mountain highway, or agricultural field photograph. Gemini 3.1 Flash Lite classifies the terrain, detects tension cracks and mudflow, computes landslide accuracy, and if chance is high, auto-dispatches emergency alerts to the Public, DDMA Authorities, and Ground Field Officers.
+              {t('viSubtitle')}
             </p>
           </div>
 
@@ -333,7 +335,7 @@ export const VisualTerrainInspectorPage = () => {
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
                 <Layers className="w-4 h-4 text-indigo-500" />
-                <span>1-Click Test Scenarios (Northeast Corridors)</span>
+                <span>{t('viTestScenarios')}</span>
               </h3>
               <span className="text-[10px] text-slate-400">Select to test</span>
             </div>
@@ -361,7 +363,7 @@ export const VisualTerrainInspectorPage = () => {
             <div className="flex items-center justify-between">
               <label className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2">
                 <UploadCloud className="w-4 h-4 text-rose-500" />
-                <span>Upload Field or Highway Image</span>
+                <span>{t('viUploadImage')}</span>
               </label>
               {selectedFile && (
                 <span className="text-[11px] text-slate-500 font-mono">
@@ -491,12 +493,12 @@ export const VisualTerrainInspectorPage = () => {
               {analyzing ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Processing with Gemini 3.1 Flash Lite...</span>
+                  <span>{t('viAnalyzing')}</span>
                 </>
               ) : (
                 <>
                   <Eye className="w-4 h-4" />
-                  <span>Analyze Image & Evaluate Landslide Chance</span>
+                  <span>{t('viAnalyzeBtn')}</span>
                 </>
               )}
             </button>
