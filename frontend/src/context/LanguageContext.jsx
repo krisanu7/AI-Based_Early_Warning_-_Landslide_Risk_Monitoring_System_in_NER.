@@ -17,9 +17,13 @@ export const LanguageProvider = ({ children }) => {
     setLanguageState(newLang);
     localStorage.setItem('ner_landslide_language', newLang);
     syncGoogleTranslate(newLang);
+    applyInstantDomTranslation(newLang);
     setTimeout(() => {
       applyInstantDomTranslation(newLang);
     }, 10);
+    setTimeout(() => {
+      applyInstantDomTranslation(newLang);
+    }, 100);
   };
 
   useEffect(() => {
@@ -29,13 +33,11 @@ export const LanguageProvider = ({ children }) => {
 
     // Watch DOM mutations to auto-translate newly mounted React components/routes
     const observer = new MutationObserver((mutations) => {
-      if (language !== 'en') {
-        for (const m of mutations) {
-          if (m.addedNodes && m.addedNodes.length > 0) {
-            for (const node of m.addedNodes) {
-              if (node.nodeType === Node.ELEMENT_NODE) {
-                applyInstantDomTranslation(language, node);
-              }
+      for (const m of mutations) {
+        if (m.addedNodes && m.addedNodes.length > 0) {
+          for (const node of m.addedNodes) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              applyInstantDomTranslation(language, node);
             }
           }
         }

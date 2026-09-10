@@ -79,7 +79,7 @@ export const Navbar = ({ onOpenSIHTour, onToggleMobileMenu }) => {
             <div className="hidden sm:block">
               <div className="flex items-center gap-1.5">
                 <span className="font-black text-sm sm:text-lg tracking-tight text-slate-900 dark:text-white">
-                  NER Landslide AI
+                  {t('appName')}
                 </span>
                 <span className="hidden md:inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30">
                   InnovateX

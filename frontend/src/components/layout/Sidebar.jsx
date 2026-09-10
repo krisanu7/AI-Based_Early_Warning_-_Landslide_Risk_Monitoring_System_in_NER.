@@ -81,7 +81,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
               className="h-8 w-auto object-contain rounded-lg shrink-0" 
             />
             <span className="font-black text-sm text-slate-900 dark:text-white">
-              NER Landslide AI
+              {t('appName')}
             </span>
           </div>
           <button
@@ -102,7 +102,7 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
         >
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-300 animate-spin shrink-0" />
-            <span>SIH 2026 Pitch Tour</span>
+            <span>{t('sihTour')}</span>
           </div>
           <ChevronRight className="w-4 h-4 text-white/80 shrink-0" />
         </button>

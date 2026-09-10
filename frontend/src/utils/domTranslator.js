@@ -487,9 +487,22 @@ export function syncGoogleTranslate(langCode) {
   }
 }
 
+// Automatically build reverse lookup map (Vernacular -> English original phrase)
+export const REVERSE_DICTIONARY = {};
+Object.entries(DICTIONARY).forEach(([enKey, langMap]) => {
+  if (langMap) {
+    Object.values(langMap).forEach((val) => {
+      if (typeof val === 'string' && val.trim()) {
+        REVERSE_DICTIONARY[val.trim()] = enKey;
+      }
+    });
+  }
+});
+
 /**
  * Instant Client-Side DOM Walker
- * Recursively traverses text nodes and translates matched phrases in 0ms
+ * Recursively traverses text nodes and translates matched phrases in 0ms.
+ * Robustly handles English <-> Vernacular bidirectional reversion.
  */
 export function applyInstantDomTranslation(langCode, rootNode = document.body) {
   if (!rootNode) return;
@@ -522,17 +535,30 @@ export function applyInstantDomTranslation(langCode, rootNode = document.body) {
     const trimmed = text.trim();
 
     if (isEnglish) {
+      // 1. Restore saved original text if available
       if (currentNode.__origText !== undefined) {
         currentNode.nodeValue = currentNode.__origText;
         delete currentNode.__origText;
+      } else if (trimmed && REVERSE_DICTIONARY[trimmed]) {
+        // 2. Reverse lookup from dictionary back to English
+        const enText = REVERSE_DICTIONARY[trimmed];
+        currentNode.nodeValue = text.replace(trimmed, enText);
       }
-    } else if (trimmed && DICTIONARY[trimmed] && DICTIONARY[trimmed][langCode]) {
-      if (currentNode.__origText === undefined) {
-        currentNode.__origText = text;
+    } else {
+      // Find the English phrase to translate from (either it's already English, or reverse-lookup it)
+      let basePhrase = trimmed;
+      if (!DICTIONARY[basePhrase] && REVERSE_DICTIONARY[trimmed]) {
+        basePhrase = REVERSE_DICTIONARY[trimmed];
       }
-      const translated = DICTIONARY[trimmed][langCode];
-      // preserve surrounding whitespace
-      currentNode.nodeValue = text.replace(trimmed, translated);
+
+      if (basePhrase && DICTIONARY[basePhrase] && DICTIONARY[basePhrase][langCode]) {
+        if (currentNode.__origText === undefined) {
+          currentNode.__origText = text;
+        }
+        const translated = DICTIONARY[basePhrase][langCode];
+        // preserve surrounding whitespace
+        currentNode.nodeValue = text.replace(trimmed, translated);
+      }
     }
     currentNode = walker.nextNode();
   }
