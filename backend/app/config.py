@@ -21,7 +21,7 @@ class Settings:
     API_PREFIX: str = "/api"
     
     # MongoDB
-    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb+srv://krisanusamanta2_db_user:0gOTeqiczfFq0Bmv@landslide.slxpat9.mongodb.net/?appName=Landslide")
     DATABASE_NAME: str = os.getenv("DATABASE_NAME", "ner_landslide_db")
     
     # PostgreSQL + PostGIS (Hybrid Mapping DB)
@@ -30,15 +30,28 @@ class Settings:
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "127.0.0.1")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "swasthya_jal_postgis")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
 
     @property
     def POSTGRES_URL_ASYNC(self) -> str:
+        if self.DATABASE_URL:
+            url = self.DATABASE_URL.strip()
+            if url.startswith("postgres://"):
+                return url.replace("postgres://", "postgresql+asyncpg://", 1)
+            elif url.startswith("postgresql://"):
+                return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+            return url
         import urllib.parse
         escaped_pwd = urllib.parse.quote_plus(self.POSTGRES_PASSWORD)
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{escaped_pwd}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     @property
     def POSTGRES_URL_SYNC(self) -> str:
+        if self.DATABASE_URL:
+            url = self.DATABASE_URL.strip()
+            if url.startswith("postgres://"):
+                return url.replace("postgres://", "postgresql://", 1)
+            return url
         import urllib.parse
         escaped_pwd = urllib.parse.quote_plus(self.POSTGRES_PASSWORD)
         return f"postgresql://{self.POSTGRES_USER}:{escaped_pwd}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"

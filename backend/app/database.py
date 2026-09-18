@@ -168,7 +168,7 @@ class MongoCollectionWrapper:
 def connect_db():
     global client, db
     try:
-        client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=2000)
+        client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=5000)
         db = client[settings.DATABASE_NAME]
         print(f"Connected to MongoDB database: {settings.DATABASE_NAME}")
     except Exception as e:
@@ -185,7 +185,7 @@ def get_collection(name: str) -> MongoCollectionWrapper:
     raw_col = None
     try:
         if db is None:
-            client_local = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=2000)
+            client_local = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=5000)
             db = client_local[settings.DATABASE_NAME]
         if db is not None:
             raw_col = db[name]
