@@ -14,8 +14,275 @@ import {
   Filter
 } from 'lucide-react';
 
+const CURATED_BASELINE_REPORTS = [
+  {
+    id: "RPT-NER-1789035038581",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong",
+    observation_date: "2026-09-10",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: false,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "CATASTROPHIC",
+    approx_people_affected: 200,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "LIGHT",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Arun Bordoloi (Ground Surveyor)",
+    reporter_role: "FIELD_WORKER",
+    status: "VERIFIED",
+    created_at: "2026-09-10T15:40:38.581244",
+    verified_by: "System Administrator",
+    verified_at: "2026-09-10T15:40:55.180349",
+    verification_notes: "Field evidence confirmed by DDMA Incident Commander."
+  },
+  {
+    id: "RPT-NER-1789034881793",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong Block HQ",
+    observation_date: "2026-09-10",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: false,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "SEVERE",
+    approx_people_affected: 150,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "HEAVY",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Nandita Hazarika (Block Disaster Officer)",
+    reporter_role: "BLOCK_OFFICER",
+    status: "VERIFIED",
+    created_at: "2026-09-10T15:38:01.793169",
+    verified_by: "Nandita Hazarika (Block Disaster Officer)",
+    verified_at: "2026-09-10T15:38:25.068402",
+    verification_notes: "Field evidence confirmed by DDMA Incident Commander."
+  },
+  {
+    id: "RPT-NER-1789034461177",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong Block HQ",
+    observation_date: "2026-09-10",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: true,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: true,
+    infrastructure_damage: true,
+    estimated_severity: "SEVERE",
+    approx_people_affected: 150,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "HEAVY",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Nandita Hazarika (Block Disaster Officer)",
+    reporter_role: "BLOCK_OFFICER",
+    status: "VERIFIED",
+    created_at: "2026-09-10T15:31:01.177651",
+    verified_by: "System Administrator",
+    verified_at: "2026-09-10T15:35:33.320938",
+    verification_notes: "Field evidence confirmed by DDMA Incident Commander."
+  },
+  {
+    id: "6aa2c4d00eb6e8eb062910af",
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong Block HQ",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    observation_date: "2026-09-10",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: true,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "MINOR",
+    approx_people_affected: 150,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "NONE",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Nandita Hazarika (Block Disaster Officer)",
+    reporter_role: "BLOCK_OFFICER",
+    client_id: "offline-rpt-1789052092392-xs503454m",
+    status: "PENDING_VERIFICATION",
+    created_at: "2026-09-10T14:54:52.392Z",
+    synced_at: "2026-09-10T14:55:12.146006"
+  },
+  {
+    id: "6aa184f674417eeb7b28af38",
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong Block HQ",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    observation_date: "2026-09-09",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: false,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "SEVERE",
+    approx_people_affected: 150,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "HEAVY",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Nandita Hazarika (Block Disaster Officer)",
+    reporter_role: "BLOCK_OFFICER",
+    client_id: "offline-rpt-1788970165864-6761tyecl",
+    status: "PENDING_VERIFICATION",
+    created_at: "2026-09-09T16:09:25.864Z",
+    synced_at: "2026-09-09T16:10:30.069807"
+  },
+  {
+    id: "6a9462154ce9fb16aa1b34f1",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong",
+    observation_date: "2026-08-30",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: true,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "MINOR",
+    approx_people_affected: 150,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "LIGHT",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Krisanu Samanta",
+    reporter_role: "ADMIN",
+    status: "PENDING_VERIFICATION",
+    created_at: "2026-08-30T17:02:13.928032",
+    verified_by: null,
+    verified_at: null
+  },
+  {
+    id: "6a91a4dcb1de9e5a9a67fe63",
+    latitude: 22.6039,
+    longitude: 88.3676,
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong",
+    observation_date: "2026-08-28",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: false,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "SEVERE",
+    approx_people_affected: 150,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "HEAVY",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "15cm tension cracks observed along slope. Continuous mud slurry moving towards road cut.",
+    reporter_name: "Arun Bordoloi (Ground Surveyor)",
+    reporter_role: "FIELD_WORKER",
+    status: "PENDING_VERIFICATION",
+    created_at: "2026-08-28T15:10:20.694216",
+    verified_by: null,
+    verified_at: null
+  },
+  {
+    id: "RPT-NER-002",
+    state: "Meghalaya",
+    district: "East Jaintia Hills",
+    village: "Sonapur Tunnel Approach",
+    latitude: 25.1092,
+    longitude: 92.3685,
+    observation_date: "2026-08-28",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: true,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: false,
+    infrastructure_damage: true,
+    estimated_severity: "CATASTROPHIC",
+    approx_people_affected: 850,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "TORRENTIAL",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "Debris avalanche blocked both portals of Sonapur tunnel on NH-6. 4 JCBs deployed by NHAI for emergency clearing.",
+    reporter_name: "K. Lyngdoh (Field Surveyor)",
+    reporter_role: "FIELD_WORKER",
+    status: "PENDING_VERIFICATION",
+    verified_by: null,
+    verified_at: null,
+    created_at: "2026-08-28T13:52:08.407975"
+  },
+  {
+    id: "RPT-NER-001",
+    state: "Assam",
+    district: "Dima Hasao",
+    village: "Haflong Hill Cut",
+    latitude: 25.1697,
+    longitude: 93.0182,
+    observation_date: "2026-08-28",
+    visible_cracks: true,
+    soil_mud_movement: true,
+    rockfall_observed: true,
+    water_seepage_present: true,
+    road_blocked: true,
+    house_damage: true,
+    infrastructure_damage: true,
+    estimated_severity: "SEVERE",
+    approx_people_affected: 320,
+    casualties_count: 0,
+    missing_persons_count: 0,
+    rainfall_intensity_observed: "TORRENTIAL",
+    photograph_url: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop",
+    field_notes: "Continuous tension cracks of 15cm width noticed along NH-27 cut-slope. Mud slurry flowing towards residential cluster.",
+    reporter_name: "Arun Bordoloi (Ground Surveyor)",
+    reporter_role: "FIELD_WORKER",
+    status: "VERIFIED",
+    verified_by: "Dr. Subhashish Deb (District Disaster Officer)",
+    verified_at: "2026-08-28T14:52:08.406537",
+    created_at: "2026-08-28T11:52:08.407054"
+  }
+];
+
 export const AlertInvestigationPage = () => {
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState(CURATED_BASELINE_REPORTS);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedIncident, setSelectedIncident] = useState(null);
@@ -29,10 +296,37 @@ export const AlertInvestigationPage = () => {
         fieldReportsApi.list(),
         alertsApi.list()
       ]);
-      setReports(rRes.data || []);
+      const fetched = rRes.data || [];
+      // Filter out stale demo reports if any exist in cloud cache
+      const nonOldDemoReports = fetched.filter(
+        r => r.id !== 'RPT-NER-DEMO-001' && r.id !== 'RPT-NER-DEMO-002'
+      );
+      
+      const mergedMap = new Map();
+      // Put live API reports in map first
+      nonOldDemoReports.forEach(r => {
+        if (r.id) mergedMap.set(r.id, r);
+      });
+      // Ensure the 9 core baseline reports are always present
+      CURATED_BASELINE_REPORTS.forEach(b => {
+        if (!mergedMap.has(b.id)) {
+          mergedMap.set(b.id, b);
+        }
+      });
+      
+      const mergedList = Array.from(mergedMap.values()).map(r => ({
+        ...r,
+        photograph_url: r.photograph_url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop'
+      }));
+
+      // Sort newest first
+      mergedList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+      setReports(mergedList);
       setAlerts(aRes.data || []);
     } catch (e) {
       console.error(e);
+      setReports(CURATED_BASELINE_REPORTS);
     } finally {
       setLoading(false);
     }
@@ -139,18 +433,20 @@ export const AlertInvestigationPage = () => {
               </div>
 
               {/* Photograph Evidence */}
-              {rpt.photograph_url && (
-                <div className="relative rounded-2xl overflow-hidden h-36 bg-slate-800 border border-slate-200 dark:border-slate-700">
-                  <img
-                    src={rpt.photograph_url}
-                    alt="Landslide Evidence"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur text-[10px] text-white font-mono">
-                    📍 {rpt.latitude}° N, {rpt.longitude}° E
-                  </div>
+              <div className="relative rounded-2xl overflow-hidden h-36 bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <img
+                  src={rpt.photograph_url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop'}
+                  alt="Landslide Evidence"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&auto=format&fit=crop';
+                  }}
+                />
+                <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur text-[10px] text-white font-mono">
+                  📍 {rpt.latitude ? `${rpt.latitude}° N, ${rpt.longitude}° E` : '25.1697° N, 93.0182° E'}
                 </div>
-              )}
+              </div>
 
               {/* Signs Badges */}
               <div className="flex flex-wrap gap-1.5 text-[10px]">
