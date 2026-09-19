@@ -1,7 +1,13 @@
 import os
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Explicitly load .env from the backend root or project root
+    _backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    _backend_env = os.path.join(_backend_dir, ".env")
+    if os.path.exists(_backend_env):
+        load_dotenv(dotenv_path=_backend_env)
+    else:
+        load_dotenv()
 except ImportError:
     pass
 
@@ -20,13 +26,13 @@ class Settings:
     VERSION: str = "2.0.0"
     API_PREFIX: str = "/api"
     
-    # MongoDB
-    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb+srv://krisanusamanta2_db_user:0gOTeqiczfFq0Bmv@landslide.slxpat9.mongodb.net/?appName=Landslide")
+    # MongoDB (Credentials loaded via MONGODB_URL environment variable / .env)
+    MONGODB_URL: str = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
     DATABASE_NAME: str = os.getenv("DATABASE_NAME", "ner_landslide_db")
     
     # PostgreSQL + PostGIS (Hybrid Mapping DB)
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
-    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "Krisanu@123")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
     POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "127.0.0.1")
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "swasthya_jal_postgis")
@@ -59,12 +65,12 @@ class Settings:
 
     
     # JWT Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "ner-landslide-early-warning-sih-2026-secure-jwt-key")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     
     # Gemini AI & RAG Configuration
-    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6Ioby7rvWv68eSUF9dip6D6fc4K12GjgAFfWHBY3YZ_og")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 
     # Landslide Risk Thresholds
     RAINFALL_TRIGGER_24H_MM: float = 100.0   # Trigger threshold for 24h rainfall

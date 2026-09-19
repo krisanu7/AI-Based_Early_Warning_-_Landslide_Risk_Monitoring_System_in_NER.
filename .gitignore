@@ -44,9 +44,15 @@ backend/.venv/
 
 # Environment variables & secrets
 .env
+.env.*
+*.env
 backend/.env
-.env.production
-.env.staging
+frontend/.env
+!*.env.example
+!.env.example
+*.pem
+*.key
+*.cert
 
 # Logs and databases
 *.log
