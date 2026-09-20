@@ -113,7 +113,7 @@ python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 - **Backend API**: `http://localhost:8000`
 - **Interactive Swagger Docs**: `http://localhost:8000/docs`
-
+- **Website Live on Vercel**: `https://ai-based-early-warning-landslide-ri.vercel.app/`
 ---
 
 ### 2. Frontend (React + Vite + Tailwind + Leaflet)
