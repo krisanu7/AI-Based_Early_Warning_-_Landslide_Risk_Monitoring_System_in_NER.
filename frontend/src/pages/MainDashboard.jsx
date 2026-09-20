@@ -27,14 +27,108 @@ import {
   Filter,
   FileSpreadsheet,
   FileCode,
-  CheckCircle2
+  CheckCircle2,
+  ClipboardEdit,
+  Eye,
+  Truck,
+  Building2,
+  Megaphone,
+  BarChart3,
+  Cpu,
+  BookOpen,
+  UserCheck
 } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
 
+const ROLE_CONFIG = {
+  FIELD_WORKER: {
+    title: 'Ground Field Surveillance & Sensor Scout',
+    badge: 'FIELD WORKER / GROUND SURVEYOR',
+    badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+    dotColor: 'bg-emerald-400',
+    description: 'Direct field reporting of slope tension cracks, soil slips, and rainfall gauges across hill roads.',
+    actions: [
+      { label: 'Submit Field Report', path: '/field-report', icon: ClipboardEdit, desc: 'Log crack coordinates & photos', color: 'hover:border-emerald-500/50' },
+      { label: 'Visual Terrain Inspector', path: '/visual-inspector', icon: Eye, desc: 'AI Drone/Photo crack detection', color: 'hover:border-teal-500/50' },
+      { label: 'Live GIS Radar Map', path: '/map', icon: Mountain, desc: 'Track rain surge & slope angles', color: 'hover:border-cyan-500/50' },
+      { label: 'Field Safety Guide', path: '/safety-guide', icon: BookOpen, desc: 'Landslide safety procedures', color: 'hover:border-amber-500/50' },
+    ]
+  },
+  BLOCK_OFFICER: {
+    title: 'Block Disaster Operations & Signal Verification',
+    badge: 'BLOCK DISASTER OFFICER',
+    badgeColor: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+    dotColor: 'bg-blue-400',
+    description: 'Responsible for local incident verification, citizen signal validation, and block evacuation coordination.',
+    actions: [
+      { label: 'Incident Triage & Verification', path: '/investigation', icon: ShieldAlert, desc: 'Approve or escalate alerts', color: 'hover:border-blue-500/50' },
+      { label: 'Field Reports Stream', path: '/field-report', icon: ClipboardEdit, desc: 'Review incoming ground signals', color: 'hover:border-emerald-500/50' },
+      { label: 'Block Relief Shelters', path: '/evacuation', icon: Building2, desc: 'Manage shelter capacities', color: 'hover:border-purple-500/50' },
+      { label: 'Public Warnings', path: '/public-warnings', icon: Megaphone, desc: 'View broadcast advisories', color: 'hover:border-amber-500/50' },
+    ]
+  },
+  DISTRICT_OFFICER: {
+    title: 'District Disaster Management Authority (DDMA) HQ',
+    badge: 'DISTRICT DISASTER OFFICER (DDMA)',
+    badgeColor: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    dotColor: 'bg-amber-400',
+    description: 'District incident command authority for emergency logistics, multi-block risk triage, and early warning enforcement.',
+    actions: [
+      { label: 'Incident Investigation & Triage', path: '/investigation', icon: ShieldAlert, desc: 'Validate & broadcast critical alerts', color: 'hover:border-amber-500/50' },
+      { label: 'Logistics & Clearance Teams', path: '/response', icon: Truck, desc: 'Deploy JCBs & SDRF excavators', color: 'hover:border-rose-500/50' },
+      { label: 'Highway & Infra Risk (NH-27 / NH-6)', path: '/infrastructure', icon: Route, desc: 'Track blocked corridors', color: 'hover:border-blue-500/50' },
+      { label: 'AI Model Diagnostics', path: '/model-monitoring', icon: Cpu, desc: 'XAI feature importance & metrics', color: 'hover:border-purple-500/50' },
+    ]
+  },
+  AUTHORITY: {
+    title: 'State Disaster Management Authority (SDMA) Command',
+    badge: 'STATE / REGIONAL AUTHORITY (SDMA)',
+    badgeColor: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+    dotColor: 'bg-purple-400',
+    description: 'Statewide coordination across 8 Northeast states, NDRF/SDRF mobilization, and multi-lingual siren broadcasts.',
+    actions: [
+      { label: 'State Logistics Deployment', path: '/response', icon: Truck, desc: 'Regional resource allocation', color: 'hover:border-purple-500/50' },
+      { label: 'Incident Escalation Triage', path: '/investigation', icon: ShieldAlert, desc: 'Statewide verification grid', color: 'hover:border-rose-500/50' },
+      { label: 'Multi-Lingual Warnings', path: '/public-warnings', icon: Megaphone, desc: 'Broadcast audio in AS, BN, HI, EN', color: 'hover:border-amber-500/50' },
+      { label: 'AI Model Monitoring', path: '/model-monitoring', icon: Cpu, desc: 'Inspect regional predictive accuracy', color: 'hover:border-cyan-500/50' },
+    ]
+  },
+  ADMIN: {
+    title: 'System Administrator & Geospatial Operations',
+    badge: 'SYSTEM ADMINISTRATOR',
+    badgeColor: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+    dotColor: 'bg-rose-400',
+    description: 'Complete administrative oversight of sensor networks, machine learning models, and user role access control.',
+    actions: [
+      { label: 'AI Model Monitoring', path: '/model-monitoring', icon: Cpu, desc: 'Manage XGBoost & sensor pipeline', color: 'hover:border-rose-500/50' },
+      { label: 'Incident Investigation', path: '/investigation', icon: ShieldAlert, desc: 'Full verification & database audit', color: 'hover:border-amber-500/50' },
+      { label: 'Spatial Telemetry Analytics', path: '/analytics', icon: BarChart3, desc: 'Historical landslide database', color: 'hover:border-blue-500/50' },
+      { label: 'Logistics & Infrastructure', path: '/response', icon: Truck, desc: 'Emergency response logistics', color: 'hover:border-purple-500/50' },
+    ]
+  },
+  PUBLIC: {
+    title: 'Citizen Landslide Safety & Community Sentinel',
+    badge: 'PUBLIC CITIZEN / RESIDENT SCOUT',
+    badgeColor: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
+    dotColor: 'bg-teal-400',
+    description: 'Citizen safety portal for reporting hill fissures, receiving live multi-lingual alerts, and finding nearest shelters.',
+    actions: [
+      { label: 'Report a Hazard / Crack', path: '/field-report', icon: AlertTriangle, desc: 'Report ground fissures to DDMA', color: 'hover:border-emerald-500/50' },
+      { label: 'Public Warnings in Your Area', path: '/public-warnings', icon: Megaphone, desc: 'Audio bulletins & sirens', color: 'hover:border-amber-500/50' },
+      { label: 'Find Nearest Evacuation Shelters', path: '/evacuation', icon: Building2, desc: 'Relief camps with food & medical', color: 'hover:border-cyan-500/50' },
+      { label: 'Citizen Safety Handbook', path: '/safety-guide', icon: BookOpen, desc: 'Monsoon survival dos & don’ts', color: 'hover:border-teal-500/50' },
+    ]
+  }
+};
+
 export const MainDashboard = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
+
+  const currentRoleKey = user?.role || 'DISTRICT_OFFICER';
+  const roleConfig = ROLE_CONFIG[currentRoleKey] || ROLE_CONFIG.DISTRICT_OFFICER;
+
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [summary, setSummary] = useState(null);
   const [mapData, setMapData] = useState({ locations: [], clusters: [], infrastructure: [], evacuation_centers: [] });
@@ -236,6 +330,76 @@ export const MainDashboard = () => {
           <RefreshCw className={`w-4 h-4 text-amber-400 ${loading ? 'animate-spin' : ''}`} />
           <span>{t('refreshTelemetry')}</span>
         </button>
+      </div>
+
+      {/* Role-Based Command Persona Section */}
+      <div className="rounded-3xl p-5 sm:p-6 bg-slate-900/90 dark:bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black tracking-wider uppercase border flex items-center gap-1.5 ${roleConfig.badgeColor}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${roleConfig.dotColor} animate-pulse`} />
+                <span>{roleConfig.badge}</span>
+              </span>
+              <span className="text-xs text-slate-400">
+                • {user?.district ? `${user.district}, ${user.state || 'Assam'}` : 'Northeast Regional Command'}
+              </span>
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-white">
+              {roleConfig.title}
+            </h2>
+            <p className="text-xs text-slate-400 max-w-3xl">
+              {roleConfig.description}
+            </p>
+          </div>
+
+          <div className="px-3.5 py-2 rounded-2xl bg-slate-800/70 border border-slate-700/60 shrink-0 self-start sm:self-auto">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Persona</div>
+            <div className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+              <UserCheck className="w-3.5 h-3.5 text-amber-400" />
+              <span>{user?.name || 'Authorized Officer'}</span>
+            </div>
+            <div className="text-[10px] text-slate-400 truncate max-w-[180px]">
+              {user?.designation || user?.role || 'Disaster Cell'}
+            </div>
+          </div>
+        </div>
+
+        {/* Role-Specific Quick Action Hub */}
+        <div>
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Role-Specific Operational Actions</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {roleConfig.actions.map((act, i) => {
+              const IconComp = act.icon;
+              return (
+                <Link
+                  key={i}
+                  to={act.path}
+                  className={`group p-3.5 rounded-2xl bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 transition-all flex flex-col justify-between gap-3 ${act.color} hover:scale-[1.02] shadow-sm`}
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="p-2 rounded-xl bg-slate-800/80 text-emerald-400 group-hover:bg-emerald-500/20 transition-colors">
+                      <IconComp className="w-4 h-4" />
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-amber-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-white group-hover:text-emerald-300 transition-colors">
+                      {act.label}
+                    </h3>
+                    <p className="text-[11px] text-slate-400 line-clamp-1">
+                      {act.desc}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Metric Cards Row */}

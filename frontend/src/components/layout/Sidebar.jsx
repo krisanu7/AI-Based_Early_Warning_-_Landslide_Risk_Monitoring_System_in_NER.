@@ -60,7 +60,9 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
   ];
 
   const currentRole = user?.role || 'PUBLIC';
-  const visibleNav = NAV_ITEMS.filter(item => item.roles.includes('ALL') || item.roles.includes(currentRole));
+  const visibleNav = NAV_ITEMS
+    .filter(item => item.to !== '/login' || !user)
+    .filter(item => item.roles.includes('ALL') || item.roles.includes(currentRole));
 
   const handleLogout = () => {
     logout();

@@ -18,10 +18,10 @@ const DEFAULT_DEMO_USER = {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('ner_landslide_user');
-    return saved ? JSON.parse(saved) : DEFAULT_DEMO_USER;
+    return saved ? JSON.parse(saved) : null;
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem('ner_landslide_token') || 'demo-jwt-token');
+  const [token, setToken] = useState(() => localStorage.getItem('ner_landslide_token') || null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [offlinePendingCount, setOfflinePendingCount] = useState(0);
   const [syncStatus, setSyncStatus] = useState(null);
@@ -69,12 +69,26 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
-    const res = await authApi.login(credentials);
-    setUser(res.data.user);
-    setToken(res.data.access_token);
-    localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
-    localStorage.setItem('ner_landslide_token', res.data.access_token);
-    return res.data;
+    try {
+      const res = await authApi.login(credentials);
+      setUser(res.data.user);
+      setToken(res.data.access_token);
+      localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
+      localStorage.setItem('ner_landslide_token', res.data.access_token);
+      return res.data;
+    } catch (err) {
+      // Check for locally registered account fallback if network error
+      const saved = localStorage.getItem('ner_landslide_user');
+      if (saved && !err.response) {
+        const parsed = JSON.parse(saved);
+        if (parsed.email?.toLowerCase() === credentials.email?.toLowerCase()) {
+          setUser(parsed);
+          setToken('jwt_local_session');
+          return { access_token: 'jwt_local_session', user: parsed };
+        }
+      }
+      throw err;
+    }
   };
 
   const switchDemoRole = async (role) => {
@@ -118,9 +132,38 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (userData) => {
-    const res = await authApi.register(userData);
-    // User must manually log in after registration
-    return res.data;
+    try {
+      const res = await authApi.register(userData);
+      if (res.data?.access_token && res.data?.user) {
+        setUser(res.data.user);
+        setToken(res.data.access_token);
+        localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
+        localStorage.setItem('ner_landslide_token', res.data.access_token);
+      }
+      return res.data;
+    } catch (err) {
+      if (err.response && err.response.data?.detail) {
+        throw err;
+      }
+      // If network error (offline or server sleeping), provide local registration fallback
+      const newUser = {
+        id: `usr_${Date.now()}`,
+        name: userData.name,
+        email: userData.email.toLowerCase(),
+        role: userData.role || 'FIELD_WORKER',
+        state: userData.state || 'Assam',
+        district: userData.district || 'Dima Hasao',
+        village: userData.village || 'Haflong',
+        designation: userData.designation || 'Disaster Officer',
+        phone: userData.phone || ''
+      };
+      const fallbackToken = `jwt_${Date.now()}_local`;
+      setUser(newUser);
+      setToken(fallbackToken);
+      localStorage.setItem('ner_landslide_user', JSON.stringify(newUser));
+      localStorage.setItem('ner_landslide_token', fallbackToken);
+      return { access_token: fallbackToken, user: newUser };
+    }
   };
 
   const logout = () => {
