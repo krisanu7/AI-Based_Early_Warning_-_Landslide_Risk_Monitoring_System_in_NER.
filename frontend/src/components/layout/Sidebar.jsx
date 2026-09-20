@@ -161,16 +161,16 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
           </div>
           <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
-            {user?.name || 'Authorized Officer'}
+            {user?.name || 'Public Citizen (Guest)'}
           </div>
-          <div className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate">
-            {user?.designation || user?.role}
+          <div className="text-[11px] text-teal-600 dark:text-teal-400 font-semibold truncate">
+            {user?.designation || (user?.role ? user.role : 'Public Citizen Portal')}
           </div>
           <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-            {user?.district}, {user?.state}
+            {user?.district ? `${user.district}, ${user.state || 'Assam'}` : 'Northeast Region (Public)'}
           </div>
 
-          {user && (
+          {user ? (
             <button
               onClick={handleLogout}
               className="w-full mt-1 pt-1.5 border-t border-slate-200 dark:border-slate-700/60 text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 flex items-center justify-center gap-1 transition-colors"
@@ -178,6 +178,21 @@ export const Sidebar = ({ isOpenMobile, onCloseMobile, onOpenSIHTour }) => {
               <LogOut className="w-3 h-3" />
               <span>{t('logoutPersona')}</span>
             </button>
+          ) : (
+            <div className="pt-1.5 border-t border-slate-200 dark:border-slate-700/60 flex items-center gap-1.5">
+              <Link
+                to="/login"
+                className="flex-1 py-1 text-center rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-[10px] font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="flex-1 py-1 text-center rounded-lg bg-emerald-500 text-slate-950 text-[10px] font-black hover:bg-emerald-400 transition-colors"
+              >
+                Register
+              </Link>
+            </div>
           )}
         </div>
 

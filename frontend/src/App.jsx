@@ -56,8 +56,9 @@ function AppContent() {
     );
   }
 
-  // 3. Protected Dashboard Routes: Unregistered/unauthenticated visitors must login/register first
-  if (!user) {
+  // 3. Officer-Restricted Routes: Only require login for specialized administration/officer modules
+  const OFFICER_ONLY_ROUTES = ['/investigation', '/response', '/model-monitoring'];
+  if (!user && OFFICER_ONLY_ROUTES.includes(location.pathname)) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 

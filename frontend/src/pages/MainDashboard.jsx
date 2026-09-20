@@ -126,8 +126,8 @@ export const MainDashboard = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
 
-  const currentRoleKey = user?.role || 'DISTRICT_OFFICER';
-  const roleConfig = ROLE_CONFIG[currentRoleKey] || ROLE_CONFIG.DISTRICT_OFFICER;
+  const currentRoleKey = user?.role || 'PUBLIC';
+  const roleConfig = ROLE_CONFIG[currentRoleKey] || ROLE_CONFIG.PUBLIC;
 
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [summary, setSummary] = useState(null);
@@ -354,13 +354,13 @@ export const MainDashboard = () => {
           </div>
 
           <div className="px-3.5 py-2 rounded-2xl bg-slate-800/70 border border-slate-700/60 shrink-0 self-start sm:self-auto">
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Persona</div>
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Mode</div>
             <div className="text-xs font-bold text-emerald-400 flex items-center gap-1">
               <UserCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>{user?.name || 'Authorized Officer'}</span>
+              <span>{user?.name || 'Public Citizen (Default)'}</span>
             </div>
             <div className="text-[10px] text-slate-400 truncate max-w-[180px]">
-              {user?.designation || user?.role || 'Disaster Cell'}
+              {user?.designation || (user ? user.role : 'Public Visitor')}
             </div>
           </div>
         </div>
