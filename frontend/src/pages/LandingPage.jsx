@@ -33,19 +33,19 @@ const SLIDES = [
     badge: "CITIZEN SIGNAL NETWORK",
     badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
     dotColor: "bg-emerald-400 shadow-[0_0_10px_#10b981]",
-    headlinePrefix: "Every local problem is a",
-    highlight1: "signal waiting",
+    headlinePrefix: "Every ground observation is a",
+    highlight1: "life-saving signal",
     highlight1Color: "text-emerald-400",
-    highlight2: "to be resolved.",
+    highlight2: "protecting hill communities.",
     highlight2Color: "text-teal-300",
-    description: "We connect real citizen grievances in Northeast India directly with university technical teams and disaster responders to build and fund real-world solutions.",
+    description: "Connecting grassroots hazard reports and slope fissure signals directly with DDMA disaster responders and AI analytics to safeguard vulnerable lives across Northeast India.",
     primaryCta: {
-      text: "Report a Problem",
+      text: "Report a Hazard Signal",
       action: "report",
       icon: ArrowRight
     },
     secondaryCta: {
-      text: "Register Institution / Industry",
+      text: "Register Institution / Scout",
       link: "/register"
     }
   },
