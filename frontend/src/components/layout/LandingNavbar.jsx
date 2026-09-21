@@ -65,14 +65,16 @@ export const LandingNavbar = ({ onOpenSIHTour, onOpenReportModal }) => {
           </a>
 
           <Link 
-            to="/map" 
+            to={!user ? "/login" : "/map"} 
+            state={!user ? { from: { pathname: "/map" } } : undefined}
             className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
           >
             <span>Public Map</span>
           </Link>
 
           <Link 
-            to="/field-report" 
+            to={!user ? "/login" : "/field-report"} 
+            state={!user ? { from: { pathname: "/field-report" } } : undefined}
             className="hover:text-emerald-400 transition-colors"
           >
             Citizen Signals
@@ -92,7 +94,8 @@ export const LandingNavbar = ({ onOpenSIHTour, onOpenReportModal }) => {
           
           {/* Live Command Dashboard Monitor Shortcut */}
           <Link
-            to="/dashboard"
+            to={!user ? "/login" : "/dashboard"}
+            state={!user ? { from: { pathname: "/dashboard" } } : undefined}
             className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 border border-slate-800 transition-all group"
             title="Launch Command Radar Dashboard"
           >
@@ -190,7 +193,8 @@ export const LandingNavbar = ({ onOpenSIHTour, onOpenReportModal }) => {
               Home
             </Link>
             <Link 
-              to="/dashboard" 
+              to={!user ? "/login" : "/dashboard"} 
+              state={!user ? { from: { pathname: "/dashboard" } } : undefined}
               onClick={() => setMobileNavOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-slate-800 flex items-center justify-between"
             >
@@ -198,14 +202,16 @@ export const LandingNavbar = ({ onOpenSIHTour, onOpenReportModal }) => {
               <span className="text-xs text-emerald-400">Launch →</span>
             </Link>
             <Link 
-              to="/map" 
+              to={!user ? "/login" : "/map"} 
+              state={!user ? { from: { pathname: "/map" } } : undefined}
               onClick={() => setMobileNavOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-slate-800"
             >
               Public Map
             </Link>
             <Link 
-              to="/field-report" 
+              to={!user ? "/login" : "/field-report"} 
+              state={!user ? { from: { pathname: "/field-report" } } : undefined}
               onClick={() => setMobileNavOpen(false)}
               className="px-3 py-2 rounded-lg hover:bg-slate-800"
             >

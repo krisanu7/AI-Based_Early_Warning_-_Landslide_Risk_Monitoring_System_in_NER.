@@ -83,13 +83,17 @@ export const LoginPage = ({ initialMode = 'login' }) => {
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const getDestination = () => {
+    return location.state?.from?.pathname || (typeof location.state?.from === 'string' ? location.state.from : null) || '/dashboard';
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
       await login({ email: loginEmail, password: loginPassword });
-      navigate('/dashboard');
+      navigate(getDestination(), { replace: true });
     } catch (err) {
       setError(err.response?.data?.detail || 'Authentication failed. Please check credentials or use 1-Click Demo Login.');
     } finally {
@@ -104,9 +108,9 @@ export const LoginPage = ({ initialMode = 'login' }) => {
     setSuccess(null);
     try {
       await register(regData);
-      setSuccess('Account registered successfully! Accessing Command Dashboard...');
+      setSuccess('Account registered successfully! Accessing SafeSlope Portal...');
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate(getDestination(), { replace: true });
       }, 600);
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Email may already be registered.');
@@ -117,7 +121,7 @@ export const LoginPage = ({ initialMode = 'login' }) => {
 
   const handleQuickDemo = async (role) => {
     await switchDemoRole(role);
-    navigate('/dashboard');
+    navigate(getDestination(), { replace: true });
   };
 
   const switchMode = (newMode) => {
@@ -125,9 +129,9 @@ export const LoginPage = ({ initialMode = 'login' }) => {
     setError(null);
     setSuccess(null);
     if (newMode === 'register' && location.pathname !== '/register') {
-      navigate('/register', { replace: true });
+      navigate('/register', { replace: true, state: location.state });
     } else if (newMode === 'login' && location.pathname !== '/login') {
-      navigate('/login', { replace: true });
+      navigate('/login', { replace: true, state: location.state });
     }
   };
 
@@ -170,6 +174,28 @@ export const LoginPage = ({ initialMode = 'login' }) => {
             Northeast Early Warning & Landslide Surveillance Portal
           </p>
         </div>
+
+        {/* Notice if redirected from protected route */}
+        {location.state?.from && (
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-3 animate-in fade-in">
+            <Lock className="w-4 h-4 text-amber-400 shrink-0" />
+            <div className="text-left leading-relaxed">
+              <span className="font-bold">Authentication Required: </span>
+              <span className="text-slate-300">
+                Please sign in or select a 1-Click Demo Persona below to access {
+                  (() => {
+                    const p = location.state?.from?.pathname || (typeof location.state?.from === 'string' ? location.state.from : '');
+                    if (p.includes('/map')) return 'the Live GIS Radar Map';
+                    if (p.includes('/safety-guide')) return 'the Landslide Safety Guide';
+                    if (p.includes('/dashboard')) return 'the Command Radar Dashboard';
+                    if (p.includes('/field-report')) return 'the Citizen Signal Reporter';
+                    return 'the requested operational section';
+                  })()
+                }.
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Tab Switcher: Sign In vs Register Account */}
         <div className="flex rounded-2xl bg-slate-900/80 border border-slate-800 p-1 text-xs font-bold">

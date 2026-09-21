@@ -23,6 +23,7 @@ import { AdminModelMonitoringPage } from './pages/AdminModelMonitoringPage';
 import { VisualTerrainInspectorPage } from './pages/VisualTerrainInspectorPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 function AppContent() {
   const [sihTourOpen, setSihTourOpen] = useState(false);
@@ -56,10 +57,15 @@ function AppContent() {
     );
   }
 
-  // 3. Officer-Restricted Routes: Only require login for specialized administration/officer modules
-  const OFFICER_ONLY_ROUTES = ['/investigation', '/response', '/model-monitoring'];
-  if (!user && OFFICER_ONLY_ROUTES.includes(location.pathname)) {
+  // 3. Protected Operational Routes: Any unauthenticated or logged-out user visiting operational modules is redirected to sign-in first
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  // 4. Officer-Restricted Modules: Restrict public citizen accounts from accessing internal officer-only modules
+  const OFFICER_ONLY_ROUTES = ['/investigation', '/response', '/model-monitoring'];
+  if (OFFICER_ONLY_ROUTES.includes(location.pathname) && user.role === 'PUBLIC') {
+    return <Navigate to="/dashboard" replace />;
   }
 
   // 4. Authenticated Operational Dashboard Layout
@@ -113,12 +119,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <AppContent />
-        </LanguageProvider>
-      </ThemeProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <AppContent />
+          </LanguageProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

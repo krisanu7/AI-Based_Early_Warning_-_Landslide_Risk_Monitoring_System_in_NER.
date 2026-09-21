@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { LandingNavbar } from '../components/layout/LandingNavbar';
 import { 
   Sparkles, 
@@ -104,6 +105,7 @@ const HOTSPOT_NODES = [
 
 export const LandingPage = ({ onOpenSIHTour }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -158,7 +160,11 @@ export const LandingPage = ({ onOpenSIHTour }) => {
     if (cta.action === 'report') {
       setReportModalOpen(true);
     } else if (cta.link) {
-      navigate(cta.link);
+      if (!user && cta.link !== '/register' && cta.link !== '/login') {
+        navigate('/login', { state: { from: { pathname: cta.link } } });
+      } else {
+        navigate(cta.link);
+      }
     }
   };
 
@@ -290,7 +296,8 @@ export const LandingPage = ({ onOpenSIHTour }) => {
               </a>
             ) : (
               <Link
-                to={slide.secondaryCta.link}
+                to={!user && slide.secondaryCta.link !== '/register' && slide.secondaryCta.link !== '/login' ? '/login' : slide.secondaryCta.link}
+                state={!user && slide.secondaryCta.link !== '/register' && slide.secondaryCta.link !== '/login' ? { from: { pathname: slide.secondaryCta.link } } : undefined}
                 className="px-6 py-3.5 sm:px-7 sm:py-4 rounded-xl font-semibold text-sm sm:text-base text-slate-200 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/40 backdrop-blur-md shadow-lg transition-all hover:scale-105 active:scale-95"
               >
                 {slide.secondaryCta.text}
@@ -484,7 +491,8 @@ export const LandingPage = ({ onOpenSIHTour }) => {
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <Link
-                to="/dashboard"
+                to={!user ? '/login' : '/dashboard'}
+                state={!user ? { from: { pathname: '/dashboard' } } : undefined}
                 className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition-all hover:scale-105"
               >
                 Launch Command Center

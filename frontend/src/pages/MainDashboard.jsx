@@ -39,7 +39,7 @@ import {
   UserCheck
 } from 'lucide-react';
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const ROLE_CONFIG = {
   FIELD_WORKER: {
@@ -125,6 +125,7 @@ const ROLE_CONFIG = {
 export const MainDashboard = () => {
   const { t } = useLanguage();
   const { user } = useAuth();
+  const location = useLocation();
 
   const currentRoleKey = user?.role || 'PUBLIC';
   const roleConfig = ROLE_CONFIG[currentRoleKey] || ROLE_CONFIG.PUBLIC;
@@ -257,6 +258,18 @@ export const MainDashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === '/map') {
+      const timer = setTimeout(() => {
+        const mapElem = document.getElementById('gis-map-section');
+        if (mapElem) {
+          mapElem.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname]);
 
   // Compute filtered, sorted, and paginated records for Permanent AI Risk Database
   const filteredRecords = storedRiskRecords.filter(rec => {
@@ -439,7 +452,7 @@ export const MainDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Left 8 Cols: Interactive GIS Map */}
-        <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div id="gis-map-section" className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 scroll-mt-24">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               <Mountain className="w-5 h-5 text-rose-600 dark:text-rose-400" />
