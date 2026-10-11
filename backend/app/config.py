@@ -72,6 +72,27 @@ class Settings:
     # Gemini AI & RAG Configuration
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 
+    # Email / SMTP Configuration (for real OTP verification)
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "true").lower() in ("true", "1", "yes")
+
+    @property
+    def SMTP_USER(self) -> str:
+        return os.getenv("SMTP_USER", "")
+
+    @property
+    def SMTP_PASSWORD(self) -> str:
+        return os.getenv("SMTP_PASSWORD", "")
+
+    @property
+    def SMTP_FROM_EMAIL(self) -> str:
+        return os.getenv("SMTP_FROM_EMAIL", os.getenv("SMTP_USER", "safeslope.ner.auth@gmail.com"))
+
+    @property
+    def GOOGLE_CLIENT_ID(self) -> str:
+        return os.getenv("GOOGLE_CLIENT_ID", "")
+
     # Landslide Risk Thresholds
     RAINFALL_TRIGGER_24H_MM: float = 100.0   # Trigger threshold for 24h rainfall
     RAINFALL_TRIGGER_48H_MM: float = 160.0   # Trigger threshold for 48h rainfall

@@ -59,8 +59,21 @@ class MongoCollectionWrapper:
         except Exception as e:
             print(f"[MongoDB] find_one fallback ({self._name}): {e}")
         
-        # In-memory fallback
+        # In-memory fallback with proper filter matching
+        filter_dict = args[0] if args and isinstance(args[0], dict) else kwargs.get("filter", {})
         mem = _in_memory_storage.get(self._name, [])
+        if filter_dict:
+            for item in mem:
+                match = True
+                for k, v in filter_dict.items():
+                    if k.startswith("$"):
+                        continue
+                    if item.get(k) != v:
+                        match = False
+                        break
+                if match:
+                    return item
+            return None
         return mem[0] if mem else None
 
     async def find(self, *args, **kwargs):
@@ -206,4 +219,5 @@ def get_audit_logs_col(): return get_collection("audit_logs")
 def get_system_metrics_col(): return get_collection("system_metrics")
 def get_landslide_risk_col(): return get_collection("landslide_risk")
 def get_visual_inspections_col(): return get_collection("visual_inspections")
+def get_email_otps_col(): return get_collection("email_otps")
 

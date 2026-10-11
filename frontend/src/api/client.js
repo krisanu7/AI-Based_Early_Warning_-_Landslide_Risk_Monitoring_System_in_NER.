@@ -1,11 +1,35 @@
 import axios from 'axios';
 import { addToOfflineQueue, getOfflineQueue, clearOfflineQueue } from '../utils/offlineQueue';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (
-  typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? `http://${window.location.hostname}:8000/api`
-    : 'https://safeslope-backend-fdnm.onrender.com/api'
-);
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    // When accessed from localhost or local LAN IP (e.g. 10.x.x.x, 192.168.x.x, etc.)
+    // always connect to the local backend running on the same host on port 8000!
+    if (
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host.startsWith('10.') ||
+      host.startsWith('192.168.') ||
+      host.startsWith('172.') ||
+      host.endsWith('.local') ||
+      /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/.test(host)
+    ) {
+      return `http://${host}:8000/api`;
+    }
+    // When accessed through an HTTPS tunnel (e.g. localtunnel, ngrok, cloudflare)
+    // use relative path '/api' so Vite forwards it to the backend without mixed-content errors
+    if (host.includes('loca.lt') || host.includes('ngrok') || host.includes('cloudflare') || window.location.protocol === 'https:') {
+      return '/api';
+    }
+  }
+  if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')) {
+    return import.meta.env.VITE_API_URL;
+  }
+  return 'https://safeslope-backend-fdnm.onrender.com/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -26,6 +50,9 @@ export const authApi = {
   login: (credentials) => api.post('/auth/login', credentials),
   demoLogin: (role) => api.post(`/auth/demo-login/${role}`),
   register: (data) => api.post('/auth/register', data),
+  sendOtp: (data) => api.post('/auth/send-otp', data),
+  verifyOtp: (data) => api.post('/auth/verify-otp', data),
+  googleAuth: (data) => api.post('/auth/google', data),
 };
 
 export const dashboardApi = {

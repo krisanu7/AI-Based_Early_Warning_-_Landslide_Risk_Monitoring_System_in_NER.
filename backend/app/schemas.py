@@ -13,10 +13,29 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class SendOtpRequest(BaseModel):
+    email: str
+    purpose: Optional[str] = "register"
+
+class VerifyOtpRequest(BaseModel):
+    email: str
+    otp: str
+
+class GoogleAuthRequest(BaseModel):
+    credential: str
+    role: Optional[str] = "PUBLIC"
+    state: Optional[str] = "Assam"
+    district: Optional[str] = "Dima Hasao"
+    village: Optional[str] = "Haflong"
+    designation: Optional[str] = None
+    phone: Optional[str] = None
+
 class UserRegister(BaseModel):
     name: str
     email: str
     password: str
+    confirm_password: Optional[str] = None
+    otp: Optional[str] = None
     role: str = "PUBLIC"  # FIELD_WORKER, BLOCK_OFFICER, DISTRICT_OFFICER, AUTHORITY, ADMIN, PUBLIC
     state: str = "Assam"
     district: str = "Dima Hasao"

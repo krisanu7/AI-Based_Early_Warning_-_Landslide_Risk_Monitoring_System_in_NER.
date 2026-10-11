@@ -15,21 +15,10 @@ app = FastAPI(
 
 import os
 
-# CORS Middleware supporting local dev, custom origins, and all Vercel deployments
-allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
-custom_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
-default_origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-origins = list(set(default_origins + custom_origins)) if custom_origins else ["*"]
-
+# CORS Middleware supporting local dev, mobile LAN IP testing, and production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
+    allow_origin_regex=r"^https?:\/\/.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

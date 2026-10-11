@@ -131,39 +131,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (userData) => {
-    try {
-      const res = await authApi.register(userData);
-      if (res.data?.access_token && res.data?.user) {
-        setUser(res.data.user);
-        setToken(res.data.access_token);
-        localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
-        localStorage.setItem('ner_landslide_token', res.data.access_token);
-      }
-      return res.data;
-    } catch (err) {
-      if (err.response && err.response.data?.detail) {
-        throw err;
-      }
-      // If network error (offline or server sleeping), provide local registration fallback
-      const newUser = {
-        id: `usr_${Date.now()}`,
-        name: userData.name,
-        email: userData.email.toLowerCase(),
-        role: userData.role || 'FIELD_WORKER',
-        state: userData.state || 'Assam',
-        district: userData.district || 'Dima Hasao',
-        village: userData.village || 'Haflong',
-        designation: userData.designation || 'Disaster Officer',
-        phone: userData.phone || ''
-      };
-      const fallbackToken = `jwt_${Date.now()}_local`;
-      setUser(newUser);
-      setToken(fallbackToken);
-      localStorage.setItem('ner_landslide_user', JSON.stringify(newUser));
-      localStorage.setItem('ner_landslide_token', fallbackToken);
-      return { access_token: fallbackToken, user: newUser };
+  const googleLogin = async (credential, metadata = {}) => {
+    const res = await authApi.googleAuth({
+      credential,
+      ...metadata
+    });
+    if (res.data?.access_token && res.data?.user) {
+      setUser(res.data.user);
+      setToken(res.data.access_token);
+      localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
+      localStorage.setItem('ner_landslide_token', res.data.access_token);
     }
+    return res.data;
+  };
+
+  const sendOtp = async (email, purpose = 'register') => {
+    return await authApi.sendOtp({ email, purpose });
+  };
+
+  const verifyOtp = async (email, otp) => {
+    return await authApi.verifyOtp({ email, otp });
+  };
+
+  const register = async (userData) => {
+    const res = await authApi.register(userData);
+    if (res.data?.access_token && res.data?.user) {
+      setUser(res.data.user);
+      setToken(res.data.access_token);
+      localStorage.setItem('ner_landslide_user', JSON.stringify(res.data.user));
+      localStorage.setItem('ner_landslide_token', res.data.access_token);
+    }
+    return res.data;
   };
 
   const logout = () => {
@@ -178,7 +176,10 @@ export const AuthProvider = ({ children }) => {
       user,
       token,
       login,
+      googleLogin,
       register,
+      sendOtp,
+      verifyOtp,
       logout,
       switchDemoRole,
       isOnline,
