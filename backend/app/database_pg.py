@@ -1,6 +1,13 @@
 import sys
 from typing import AsyncGenerator
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+try:
+    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+except Exception as _async_err:
+    create_async_engine = None
+    AsyncSession = None
+    async_sessionmaker = None
+    print(f"[PostGIS Notice] Async SQLAlchemy/greenlet: {_async_err}", file=sys.stderr)
+
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import text
 from app.config import settings
@@ -12,6 +19,8 @@ AsyncSessionLocal = None
 
 def get_pg_engine():
     global pg_engine, AsyncSessionLocal
+    if create_async_engine is None:
+        return None
     if pg_engine is None:
         try:
             pg_engine = create_async_engine(

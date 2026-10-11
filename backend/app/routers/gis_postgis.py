@@ -1,6 +1,9 @@
 import json
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.ext.asyncio import AsyncSession
+try:
+    from sqlalchemy.ext.asyncio import AsyncSession
+except Exception:
+    AsyncSession = None
 from sqlalchemy import select, func, text
 from geoalchemy2.functions import ST_AsGeoJSON, ST_DWithin, ST_Distance, ST_SetSRID, ST_MakePoint, ST_Contains
 from typing import Optional, List
