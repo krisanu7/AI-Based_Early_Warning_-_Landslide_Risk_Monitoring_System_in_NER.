@@ -191,8 +191,8 @@ async def google_auth(req: GoogleAuthRequest):
     google_user = None
 
     # Verify ID token with Google's public tokeninfo endpoint
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        try:
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(
                 f"https://oauth2.googleapis.com/tokeninfo?id_token={token_str}"
             )
@@ -200,8 +200,21 @@ async def google_auth(req: GoogleAuthRequest):
                 google_user = resp.json()
             else:
                 print(f"[Google Auth] tokeninfo returned status {resp.status_code}: {resp.text}")
-        except Exception as e:
-            print(f"[Google Auth] tokeninfo request failed: {e}")
+    except Exception as e:
+        print(f"[Google Auth] httpx tokeninfo request failed: {e}")
+
+    # Zero-dependency fallback using Python standard library urllib
+    if not google_user:
+        try:
+            import urllib.request
+            import json
+            req_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token_str}"
+            req_obj = urllib.request.Request(req_url, headers={"User-Agent": "SafeSlope-NER/1.0"})
+            with urllib.request.urlopen(req_obj, timeout=10.0) as uresp:
+                if uresp.status == 200:
+                    google_user = json.loads(uresp.read().decode())
+        except Exception as ue:
+            print(f"[Google Auth fallback] urllib tokeninfo request failed: {ue}")
 
     if not google_user or not google_user.get("email"):
         raise HTTPException(
