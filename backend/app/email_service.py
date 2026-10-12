@@ -39,6 +39,32 @@ def is_valid_email_syntax(email: str) -> Tuple[bool, str]:
     
     return True, clean_email
 
+async def _send_resend_https_email(to_email: str, subject: str, html_content: str, text_content: str) -> Tuple[bool, str]:
+    """HTTPS API email delivery (Port 443) that bypasses all cloud SMTP port restrictions."""
+    api_key = os.getenv("RESEND_API_KEY", "").strip()
+    if not api_key:
+        return False, "RESEND_API_KEY not set"
+    try:
+        import httpx
+        from_email = os.getenv("RESEND_FROM_EMAIL", "SafeSlope NER <onboarding@resend.dev>")
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            resp = await client.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json={
+                    "from": from_email,
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": html_content,
+                    "text": text_content
+                }
+            )
+            if resp.status_code in (200, 201):
+                return True, "Email delivered via Resend HTTPS"
+            return False, f"Resend HTTP {resp.status_code}: {resp.text}"
+    except Exception as e:
+        return False, f"Resend delivery failed: {e}"
+
 def _send_smtp_email_sync(to_email: str, subject: str, html_content: str, text_content: str) -> Tuple[bool, str]:
     """Synchronous SMTP email delivery using Python's standard smtplib."""
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
@@ -56,12 +82,12 @@ def _send_smtp_email_sync(to_email: str, subject: str, html_content: str, text_c
 
         if settings.SMTP_PORT == 465:
             # SSL
-            with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
+            with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=5) as server:
                 server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
                 server.sendmail(settings.SMTP_FROM_EMAIL, [to_email], msg.as_string())
         else:
             # STARTTLS (port 587)
-            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
+            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=5) as server:
                 if settings.SMTP_USE_TLS:
                     server.starttls()
                 server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
@@ -148,20 +174,31 @@ Government of Assam / NDMA SIH PS 26001
     except Exception:
         pass
 
-    # Check if SMTP is configured
+    # 1. Try Resend HTTPS API (Port 443) first if configured - bypasses all cloud SMTP port blocks
+    if os.getenv("RESEND_API_KEY"):
+        resend_ok, resend_msg = await _send_resend_https_email(to_email, subject, html_content, text_content)
+        if resend_ok:
+            print(f"[SafeSlope Email] Real HTTPS email delivered to {to_email}")
+            return {"sent": True, "dev_mode": False, "message": "Verification code dispatched to your email inbox."}
+        else:
+            print(f"[SafeSlope Email] Resend HTTPS failed: {resend_msg}")
+
+    # 2. Try Standard SMTP (works on localhost, but blocked by Render Free Tier firewall on ports 25, 465, 587)
     has_smtp = bool(settings.SMTP_USER and settings.SMTP_PASSWORD)
+    smtp_success = False
+    smtp_msg = ""
     
     if has_smtp:
-        success, msg = await asyncio.to_thread(
+        smtp_success, smtp_msg = await asyncio.to_thread(
             _send_smtp_email_sync, to_email, subject, html_content, text_content
         )
-        if success:
+        if smtp_success:
             print(f"[SafeSlope Email] Real SMTP email delivered to {to_email}")
-            return {"sent": True, "dev_mode": False, "message": "Verification code emailed successfully."}
+            return {"sent": True, "dev_mode": False, "message": "Verification code dispatched to your email inbox."}
         else:
-            print(f"[SafeSlope Email] SMTP Warning: {msg}. Falling back to terminal display.")
+            print(f"[SafeSlope Email] SMTP Delivery Blocked by Cloud Host: {smtp_msg}. Falling back to instant preview code.")
 
-    # Development / Local Demo Fallback: print to console so nobody is blocked!
+    # 3. Resilient Fallback: Always display the code so user is NEVER stranded on cloud free tier!
     print("=" * 64)
     print(f" [SafeSlope Email Service] Real Email Verification Code")
     print(f" Target Email: {to_email}")
@@ -170,8 +207,8 @@ Government of Assam / NDMA SIH PS 26001
     print("=" * 64)
 
     return {
-        "sent": True,
-        "dev_mode": not has_smtp,
-        "dev_otp": otp_code if not has_smtp else None,
-        "message": f"Verification code generated for {to_email}. (Check inbox{' or terminal in dev mode' if not has_smtp else ''})"
+        "sent": False,
+        "dev_mode": True,
+        "dev_otp": otp_code,
+        "message": f"Verification code generated: {otp_code} (Cloud free tier host blocks SMTP port 587; use instant preview code below to verify)."
     }
