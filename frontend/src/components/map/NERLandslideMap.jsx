@@ -91,7 +91,9 @@ export const NERLandslideMap = ({
     return '#10b981'; // Emerald/Green (Low)
   };
 
-  const filteredLocations = locations.filter(loc => {
+  const safeLocations = Array.isArray(locations) ? locations : [];
+
+  const filteredLocations = safeLocations.filter(loc => {
     if (activeFilter === 'CRITICAL') return loc.risk_score >= 81;
     if (activeFilter === 'HIGH') return loc.risk_score >= 61 && loc.risk_score < 81;
     if (activeFilter === 'MODERATE') return loc.risk_score >= 31 && loc.risk_score < 61;
@@ -100,11 +102,11 @@ export const NERLandslideMap = ({
     return true;
   });
 
-  const criticalCount = locations.filter(l => l.risk_score >= 81).length;
-  const highCount = locations.filter(l => l.risk_score >= 61 && l.risk_score < 81).length;
-  const moderateCount = locations.filter(l => l.risk_score >= 31 && l.risk_score < 61).length;
-  const lowCount = locations.filter(l => l.risk_score < 31).length;
-  const rainTriggerCount = locations.filter(l => (l.rainfall_24h_mm || l.rainfall_24h) >= 100).length;
+  const criticalCount = safeLocations.filter(l => l.risk_score >= 81).length;
+  const highCount = safeLocations.filter(l => l.risk_score >= 61 && l.risk_score < 81).length;
+  const moderateCount = safeLocations.filter(l => l.risk_score >= 31 && l.risk_score < 61).length;
+  const lowCount = safeLocations.filter(l => l.risk_score < 31).length;
+  const rainTriggerCount = safeLocations.filter(l => (l.rainfall_24h_mm || l.rainfall_24h) >= 100).length;
 
   const containerClasses = isFullscreen
     ? "fixed inset-0 z-[9999] w-screen h-screen rounded-none bg-slate-900 shadow-2xl transition-all duration-300"

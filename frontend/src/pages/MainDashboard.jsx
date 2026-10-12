@@ -150,9 +150,10 @@ export const MainDashboard = () => {
   const fetchRiskRecords = async () => {
     try {
       const res = await predictionsApi.getRecords();
-      setStoredRiskRecords(res.data || []);
+      setStoredRiskRecords(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       console.error('Failed to load stored landslide_risk records', e);
+      setStoredRiskRecords([]);
     }
   };
 
@@ -167,8 +168,10 @@ export const MainDashboard = () => {
     }
   };
 
+  const safeRecords = Array.isArray(storedRiskRecords) ? storedRiskRecords : [];
+
   const handleExportCSV = () => {
-    if (!storedRiskRecords || storedRiskRecords.length === 0) {
+    if (!safeRecords || safeRecords.length === 0) {
       alert('No risk records available to export.');
       return;
     }
@@ -214,7 +217,7 @@ export const MainDashboard = () => {
   };
 
   const handleExportJSON = () => {
-    if (!storedRiskRecords || storedRiskRecords.length === 0) {
+    if (!safeRecords || safeRecords.length === 0) {
       alert('No risk records available to export.');
       return;
     }
@@ -236,17 +239,25 @@ export const MainDashboard = () => {
         mapApi.getRiskNodes(),
         predictionsApi.getRecords()
       ]);
-      if (dashRes.status === 'fulfilled' && dashRes.value?.data) {
+      if (dashRes.status === 'fulfilled' && dashRes.value?.data && typeof dashRes.value.data === 'object') {
         setSummary(dashRes.value.data);
       }
-      if (mapRes.status === 'fulfilled' && mapRes.value?.data) {
-        setMapData(mapRes.value.data);
-        if (mapRes.value.data?.locations?.length > 0) {
-          setSelectedLocation(mapRes.value.data.locations[0]);
+      if (mapRes.status === 'fulfilled' && mapRes.value?.data && typeof mapRes.value.data === 'object') {
+        const d = mapRes.value.data;
+        const validLocs = Array.isArray(d?.locations) ? d.locations : [];
+        setMapData({
+          locations: validLocs,
+          clusters: Array.isArray(d?.clusters) ? d.clusters : [],
+          infrastructure: Array.isArray(d?.infrastructure) ? d.infrastructure : [],
+          evacuation_centers: Array.isArray(d?.evacuation_centers) ? d.evacuation_centers : [],
+          ...d
+        });
+        if (validLocs.length > 0) {
+          setSelectedLocation(validLocs[0]);
         }
       }
       if (recRes.status === 'fulfilled' && recRes.value?.data) {
-        setStoredRiskRecords(recRes.value.data || []);
+        setStoredRiskRecords(Array.isArray(recRes.value.data) ? recRes.value.data : []);
       }
     } catch (err) {
       console.error('Failed to load dashboard telemetry', err);
@@ -272,7 +283,7 @@ export const MainDashboard = () => {
   }, [location.pathname]);
 
   // Compute filtered, sorted, and paginated records for Permanent AI Risk Database
-  const filteredRecords = storedRiskRecords.filter(rec => {
+  const filteredRecords = safeRecords.filter(rec => {
     const matchesCategory = 
       dbCategory === 'ALL' ||
       (dbCategory === 'CRITICAL' && (rec.risk_score >= 81 || (rec.risk_level && rec.risk_level.includes('Critical')))) ||
@@ -591,7 +602,7 @@ export const MainDashboard = () => {
               <span>MongoDB Collection: landslide_risk</span>
             </div>
             <h3 className="font-black text-lg sm:text-xl text-slate-900 dark:text-white">
-              Permanent AI Risk Detection Database ({storedRiskRecords.length} Saved Records)
+              Permanent AI Risk Detection Database ({safeRecords.length} Saved Records)
             </h3>
             <p className="text-xs text-slate-500 max-w-2xl">
               Auditable permanent log of all risk assessments detected by users and sensors. Fully searchable, filterable, and exportable for public monitoring and research.
@@ -629,7 +640,7 @@ export const MainDashboard = () => {
             </button>
 
             {/* Clear Log (Restricted for Public) */}
-            {storedRiskRecords.length > 0 && user?.role !== 'PUBLIC' && (
+            {safeRecords.length > 0 && user?.role !== 'PUBLIC' && (
               <button
                 onClick={handleClearRiskRecords}
                 className="px-3 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 font-bold text-xs rounded-xl border border-rose-200 dark:border-rose-800/60 transition-all flex items-center gap-1.5 cursor-pointer"
@@ -686,11 +697,11 @@ export const MainDashboard = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
             <div className="flex items-center gap-1.5 flex-wrap">
               {[
-                { id: 'ALL', label: 'All Records', count: storedRiskRecords.length },
-                { id: 'CRITICAL', label: 'Critical (≥81%)', count: storedRiskRecords.filter(r => r.risk_score >= 81 || (r.risk_level && r.risk_level.includes('Critical'))).length },
-                { id: 'HIGH', label: 'High (61–80%)', count: storedRiskRecords.filter(r => r.risk_score >= 61 && r.risk_score < 81).length },
-                { id: 'MODERATE', label: 'Moderate (31–60%)', count: storedRiskRecords.filter(r => r.risk_score >= 31 && r.risk_score < 61).length },
-                { id: 'LOW', label: 'Low (0–30%)', count: storedRiskRecords.filter(r => r.risk_score < 31).length }
+                { id: 'ALL', label: 'All Records', count: safeRecords.length },
+                { id: 'CRITICAL', label: 'Critical (≥81%)', count: safeRecords.filter(r => r.risk_score >= 81 || (r.risk_level && r.risk_level.includes('Critical'))).length },
+                { id: 'HIGH', label: 'High (61–80%)', count: safeRecords.filter(r => r.risk_score >= 61 && r.risk_score < 81).length },
+                { id: 'MODERATE', label: 'Moderate (31–60%)', count: safeRecords.filter(r => r.risk_score >= 31 && r.risk_score < 61).length },
+                { id: 'LOW', label: 'Low (0–30%)', count: safeRecords.filter(r => r.risk_score < 31).length }
               ].map((tab) => (
                 <button
                   key={tab.id}

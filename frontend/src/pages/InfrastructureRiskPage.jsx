@@ -19,7 +19,7 @@ export const InfrastructureRiskPage = () => {
     try {
       setLoading(true);
       const res = await infrastructureApi.list();
-      setInfrastructure(res.data || []);
+      setInfrastructure(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -69,7 +69,7 @@ export const InfrastructureRiskPage = () => {
 
       {/* Infrastructure Nodes Table */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {infrastructure.map((item, idx) => (
+        {(Array.isArray(infrastructure) ? infrastructure : []).map((item, idx) => (
           <div
             key={idx}
             className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 flex flex-col justify-between"

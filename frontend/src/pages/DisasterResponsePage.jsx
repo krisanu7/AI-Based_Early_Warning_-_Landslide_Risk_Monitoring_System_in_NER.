@@ -25,7 +25,7 @@ export const DisasterResponsePage = () => {
     const fetchLocations = async () => {
       try {
         const res = await mapApi.getRiskNodes();
-        const locs = res.data?.locations || [];
+        const locs = Array.isArray(res.data?.locations) ? res.data.locations : [];
         setLocations(locs);
         if (locs.length > 0) {
           setSelectedVillage(locs[0].village);
@@ -33,6 +33,7 @@ export const DisasterResponsePage = () => {
         }
       } catch (e) {
         console.error(e);
+        setLocations([]);
       }
     };
     fetchLocations();
@@ -84,7 +85,7 @@ export const DisasterResponsePage = () => {
             onChange={handleVillageChange}
             className="p-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs"
           >
-            {locations.map((loc, idx) => (
+            {(Array.isArray(locations) ? locations : []).map((loc, idx) => (
               <option key={idx} value={loc.village}>
                 {loc.village} ({loc.district}, {loc.state}) — {loc.risk_score}/100
               </option>

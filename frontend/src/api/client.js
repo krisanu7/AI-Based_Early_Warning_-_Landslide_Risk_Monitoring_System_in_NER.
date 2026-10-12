@@ -2,10 +2,15 @@ import axios from 'axios';
 import { addToOfflineQueue, getOfflineQueue, clearOfflineQueue } from '../utils/offlineQueue';
 
 const getApiBaseUrl = () => {
+  // If explicitly configured in environment, use it (ignore if localhost in production build)
+  if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')) {
+    return import.meta.env.VITE_API_URL;
+  }
+
   if (typeof window !== 'undefined') {
     const host = window.location.hostname;
     // When accessed from localhost or local LAN IP (e.g. 10.x.x.x, 192.168.x.x, etc.)
-    // always connect to the local backend running on the same host on port 8000!
+    // connect to the local backend running on port 8000
     if (
       host === 'localhost' ||
       host === '127.0.0.1' ||
@@ -17,15 +22,14 @@ const getApiBaseUrl = () => {
     ) {
       return `http://${host}:8000/api`;
     }
-    // When accessed through an HTTPS tunnel (e.g. localtunnel, ngrok, cloudflare)
-    // use relative path '/api' so Vite forwards it to the backend without mixed-content errors
-    if (host.includes('loca.lt') || host.includes('ngrok') || host.includes('cloudflare') || window.location.protocol === 'https:') {
+    // Dev tunnels (e.g. localtunnel, ngrok, cloudflare tunnel to local dev server)
+    if (host.includes('loca.lt') || host.includes('ngrok') || host.includes('trycloudflare.com')) {
       return '/api';
     }
+    // On Vercel or any cloud-hosted domain, connect directly to production backend on Render
+    return 'https://safeslope-backend-fdnm.onrender.com/api';
   }
-  if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')) {
-    return import.meta.env.VITE_API_URL;
-  }
+
   return 'https://safeslope-backend-fdnm.onrender.com/api';
 };
 
@@ -45,6 +49,17 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Guard against unexpected HTML responses (e.g. SPA index.html or 502 gateway error pages)
+api.interceptors.response.use(
+  (response) => {
+    if (typeof response.data === 'string' && (response.data.includes('<!doctype') || response.data.includes('<html'))) {
+      return Promise.reject(new Error('Backend returned an HTML response instead of JSON. The cloud server may be initializing.'));
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
 
 export const authApi = {
   login: (credentials) => api.post('/auth/login', credentials),

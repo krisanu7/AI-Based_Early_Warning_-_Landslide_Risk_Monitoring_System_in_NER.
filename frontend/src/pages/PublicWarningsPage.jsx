@@ -116,9 +116,10 @@ export const PublicWarningsPage = () => {
     try {
       setLoading(true);
       const res = await alertsApi.getPublicWarnings();
-      setWarnings(res.data?.active_public_warnings || []);
+      setWarnings(Array.isArray(res.data?.active_public_warnings) ? res.data.active_public_warnings : []);
     } catch (e) {
       console.error(e);
+      setWarnings([]);
     } finally {
       setLoading(false);
     }
@@ -187,7 +188,7 @@ export const PublicWarningsPage = () => {
             </p>
           </div>
         ) : (
-          warnings.map((warn, idx) => {
+          (Array.isArray(warnings) ? warnings : []).map((warn, idx) => {
             const loc = getLocalizedWarning(warn, idx);
             return (
               <div

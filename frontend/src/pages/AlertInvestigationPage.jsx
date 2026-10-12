@@ -296,7 +296,7 @@ export const AlertInvestigationPage = () => {
         fieldReportsApi.list(),
         alertsApi.list()
       ]);
-      const fetched = rRes.data || [];
+      const fetched = Array.isArray(rRes.data) ? rRes.data : [];
       // Filter out stale demo reports if any exist in cloud cache
       const nonOldDemoReports = fetched.filter(
         r => r.id !== 'RPT-NER-DEMO-001' && r.id !== 'RPT-NER-DEMO-002'
@@ -323,7 +323,7 @@ export const AlertInvestigationPage = () => {
       mergedList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
       setReports(mergedList);
-      setAlerts(aRes.data || []);
+      setAlerts(Array.isArray(aRes.data) ? aRes.data : []);
     } catch (e) {
       console.error(e);
       setReports(CURATED_BASELINE_REPORTS);
@@ -341,7 +341,8 @@ export const AlertInvestigationPage = () => {
     setVerifyModalOpen(true);
   };
 
-  const filteredReports = reports.filter(r => {
+  const safeReports = Array.isArray(reports) ? reports : [];
+  const filteredReports = safeReports.filter(r => {
     if (filterStatus === 'ALL') return true;
     return r.status === filterStatus;
   });
@@ -393,7 +394,7 @@ export const AlertInvestigationPage = () => {
               : 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40'
           }`}
         >
-          Pending Review ({reports.filter(r => r.status === 'PENDING_VERIFICATION').length})
+          Pending Review ({safeReports.filter(r => r.status === 'PENDING_VERIFICATION').length})
         </button>
         <button
           onClick={() => setFilterStatus('VERIFIED')}
@@ -403,7 +404,7 @@ export const AlertInvestigationPage = () => {
               : 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
           }`}
         >
-          Verified Events ({reports.filter(r => r.status === 'VERIFIED').length})
+          Verified Events ({safeReports.filter(r => r.status === 'VERIFIED').length})
         </button>
       </div>
 

@@ -18,7 +18,7 @@ export const EvacuationDirectoryPage = () => {
     try {
       setLoading(true);
       const res = await evacuationApi.listShelters();
-      setShelters(res.data || []);
+      setShelters(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -59,7 +59,7 @@ export const EvacuationDirectoryPage = () => {
 
       {/* Shelters Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {shelters.map((sh, idx) => {
+        {(Array.isArray(shelters) ? shelters : []).map((sh, idx) => {
           const occupancyPct = Math.round(((sh.current_occupancy || 0) / (sh.capacity || 1)) * 100);
           return (
             <div

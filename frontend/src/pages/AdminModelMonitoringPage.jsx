@@ -29,7 +29,7 @@ export const AdminModelMonitoringPage = () => {
       ]);
       setModelMetrics(mRes.data);
       setSystemHealth(hRes.data);
-      setAuditLogs(aRes.data || []);
+      setAuditLogs(Array.isArray(aRes.data) ? aRes.data : []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -177,11 +177,11 @@ export const AdminModelMonitoringPage = () => {
               Audit log tracking all incident verifications, warning broadcasts, and offline synchronization batches.
             </p>
           </div>
-          <span className="text-xs text-slate-400 font-mono">{auditLogs.length} events logged</span>
+          <span className="text-xs text-slate-400 font-mono">{(Array.isArray(auditLogs) ? auditLogs : []).length} events logged</span>
         </div>
 
         <div className="space-y-2.5 max-h-[380px] overflow-y-auto">
-          {auditLogs.map((log, idx) => (
+          {(Array.isArray(auditLogs) ? auditLogs : []).map((log, idx) => (
             <div
               key={idx}
               className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"

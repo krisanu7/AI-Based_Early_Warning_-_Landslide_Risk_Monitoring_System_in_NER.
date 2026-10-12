@@ -105,7 +105,7 @@ export const LoginPage = ({ initialMode = 'login' }) => {
     return (
       import.meta.env.VITE_GOOGLE_CLIENT_ID || 
       localStorage.getItem('ner_google_client_id') || 
-      ''
+      '823675313674-4di6pj67lbtpkqp5dvqlfadd4nmaqjdp.apps.googleusercontent.com'
     );
   });
   const [showGoogleSetupModal, setShowGoogleSetupModal] = useState(false);
@@ -227,7 +227,14 @@ export const LoginPage = ({ initialMode = 'login' }) => {
       setInputClientId('');
       setShowGoogleSetupModal(true);
     } else if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt();
+      try {
+        window.google.accounts.id.prompt();
+      } catch (err) {
+        console.warn('Google prompt error:', err);
+        setShowGoogleSetupModal(true);
+      }
+    } else {
+      setError('Google Identity Services library is still loading. Please try again in 2 seconds.');
     }
   };
 
@@ -986,7 +993,7 @@ export const LoginPage = ({ initialMode = 'login' }) => {
                 </li>
                 <li>Click <strong>+ CREATE CREDENTIALS</strong> &rarr; <strong>OAuth client ID</strong></li>
                 <li>Select Application type: <strong>Web application</strong></li>
-                <li>Under <em>Authorized JavaScript origins</em>, add: <code className="bg-slate-800 text-teal-300 px-1 py-0.5 rounded">http://localhost:5173</code></li>
+                <li>Under <em>Authorized JavaScript origins</em>, add: <code className="bg-slate-800 text-teal-300 px-1 py-0.5 rounded">http://localhost:5173</code> {typeof window !== 'undefined' && window.location.hostname !== 'localhost' && (<>and <code className="bg-slate-800 text-teal-300 px-1 py-0.5 rounded">{window.location.origin}</code></>)}</li>
                 <li>Click <strong>CREATE</strong> and copy your <strong>Client ID</strong> (ends with <code>.apps.googleusercontent.com</code>)</li>
               </ol>
             </div>
