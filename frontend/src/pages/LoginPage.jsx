@@ -267,7 +267,7 @@ export const LoginPage = ({ initialMode = 'login' }) => {
       const res = await sendOtp(regData.email, 'register');
       setOtpSent(true);
       setOtpCountdown(60);
-      setSuccess(`Verification code dispatched to ${regData.email}`);
+      setSuccess(`Verification code dispatched to ${regData.email}. If not in Primary Inbox, please check your Spam / Junk folder.`);
       if (res.data?.dev_otp) {
         setDevOtpHint(res.data.dev_otp);
       }
@@ -636,26 +636,31 @@ export const LoginPage = ({ initialMode = 'login' }) => {
                   </div>
 
                   {otpSent && (
-                    <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2 animate-in fade-in">
-                      <div className="relative flex-1">
-                        <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
-                        <input
-                          type="text"
-                          maxLength={6}
-                          value={otpCode}
-                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                          placeholder="6-digit code"
-                          className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono text-sm tracking-widest text-center focus:border-emerald-500 outline-none"
-                        />
+                    <div className="pt-2 border-t border-slate-800/80 space-y-2 animate-in fade-in">
+                      <div className="flex items-center gap-2">
+                        <div className="relative flex-1">
+                          <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                          <input
+                            type="text"
+                            maxLength={6}
+                            value={otpCode}
+                            onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                            placeholder="6-digit code"
+                            className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-700 bg-slate-950 text-white font-mono text-sm tracking-widest text-center focus:border-emerald-500 outline-none"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          disabled={otpLoading || otpCode.length !== 6}
+                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs transition-all disabled:opacity-50 cursor-pointer"
+                        >
+                          Verify
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleVerifyOtp}
-                        disabled={otpLoading || otpCode.length !== 6}
-                        className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-xs transition-all disabled:opacity-50 cursor-pointer"
-                      >
-                        Verify
-                      </button>
+                      <p className="text-[10px] text-amber-400/90 leading-tight">
+                        Check your <strong>Inbox</strong> and <strong>Spam / Junk</strong> or <strong>Promotions</strong> folder for the code.
+                      </p>
                     </div>
                   )}
 
